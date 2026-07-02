@@ -1,0 +1,22 @@
+{
+    "background": "0xFF121212",
+    "surface": "0xFF1E1E1E",
+    "surface_variant": "0xFF2A2A2A",
+    "surface_hover": "0x3CFFFFFF",
+    "surface_transparent": "0x00000000",
+    "primary": "0xFFFFAB4A",
+    "primary_variant": "0xFFD9453A",
+    "secondary": "0xFFFFDB64",
+    "text_primary": "0xFFFFFFFF",
+    "text_secondary": "0xFFB0B0B0",
+    "text_hint": "0xFF707070",
+    "online": "0xFF57AF4C",
+    "error": "0xFFCF6679",
+    "warning": "0xFFFFDA07",
+    "chat_list_background": "0xFF172129",
+    "chat_background": "0xFF0D1117",
+    "my_message_bubble": "0xFFa14e00",
+    "other_message_bubble": "0xFF303030",
+    "input_bar": "0xFF1A1F28",
+    "surface_icon": "0x8AFFFFFF"
+}

@@ -16,22 +16,22 @@ class ChatsPage extends StatefulWidget {
 class _ChatsPageState extends State<ChatsPage> {
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
-  final List<List<Widget>> _items = chatList;
-  int _selectedIndex = 0;
-  String _selectedChatName = "";
+  final Map<String, List<MessageBubble>> _items = chatList;
+  int? _selectedIndex;
+  String? _selectedChatName;
 
   void _sendMsg() {
     final text = _controller.text.trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty || _selectedIndex == null) return;
 
     setState(() {
-      _items[_selectedIndex].insert(0, MessageBubble(text: text, isMe: true));
+      _items[_selectedIndex!]!.insert(0, MessageBubble(text: text, isMe: true));
       _focusNode.requestFocus();
       _controller.clear();
     });
   }
 
-  void _setIndex(int index, String chatName) {
+  void _setIndex(int? index, String? chatName) {
     setState(() {
       _selectedIndex = index;
       _selectedChatName = chatName;
@@ -80,10 +80,7 @@ class _ChatsPageState extends State<ChatsPage> {
                               ),
                             ),
                             Expanded(
-                              child: WidgetList(
-                                items: chatList1,
-                                reverse: false,
-                              ),
+                              child: ChatList(items: _items, reverse: false),
                             ),
                           ],
                         ),
@@ -140,10 +137,7 @@ class LoginPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            SizedBox(
-              width: 250,
-              child: LoginWidget()
-            ),
+            SizedBox(width: 250, child: LoginWidget()),
             const SizedBox(height: 10),
             CustomButton(text: Text("БУРМАЛДА"), onPress: () => startLogin()),
           ],
@@ -191,8 +185,73 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(body: Center(child: Text("Hello Profile")));
+  }
+}
+
+class ChatsPageMobile extends StatefulWidget {
+  const ChatsPageMobile({super.key});
+
+  @override
+  State<ChatsPageMobile> createState() => _ChatsPageMobileState();
+}
+
+class _ChatsPageMobileState extends State<ChatsPageMobile> {
+  final _controller = TextEditingController();
+  final Map<String, List<MessageBubble>> _items = chatList;
+  int? _selectedIndex;
+  String? _selectedChatName;
+
+  void _sendMsg() {
+    final text = _controller.text.trim();
+    if (text.isEmpty || _selectedIndex == null) return;
+
+    setState(() {
+      _items[_items.keys.elementAt(_selectedIndex!)]!.insert(0, MessageBubble(text: text, isMe: true));
+      _controller.clear();
+    });
+  }
+
+  void _setIndex(int? index, String? chatName) {
+    setState(() {
+      _selectedIndex = index;
+      _selectedChatName = chatName;
+    });
+  }
+
+  // void _CloseChat() {
+  //   Tabs.of(context).setIndex(null, null);
+  // }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: Text("Hello Profile")),
+      body: Center(
+        child: Tabs(
+          selectedIndex: _selectedIndex,
+          setIndex: _setIndex,
+          currentChatName: _selectedChatName,
+          scrollDirection: Axis.vertical,
+          child: IndexedStack(
+            alignment: AlignmentDirectional.centerStart,
+            index: _selectedIndex == null ? 0 : 1,
+            children: [
+              ChatList(items: _items, reverse: false),
+              ChatContent(
+                controller: _controller,
+                sendMsg: _sendMsg,
+                items: _items,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

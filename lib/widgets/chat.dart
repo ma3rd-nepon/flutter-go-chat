@@ -2,73 +2,7 @@ import "package:flutter/material.dart";
 import "package:go_dart_e2e/theme/app_theme.dart";
 import "package:go_dart_e2e/widgets/buttons.dart";
 
-const chatList1 = [
-  ChatListElement(
-    chatName: "эмир тиктокер",
-    chatLastMsg: "привет",
-    chatIcon: Icon(Icons.account_circle_rounded, size: 70),
-    chatStatus: true,
-    index: 0,
-  ),
-  ChatListElement(
-    chatName: "chat2",
-    chatLastMsg: "нет",
-    chatIcon: Icon(Icons.account_circle_rounded, size: 70),
-    chatStatus: false,
-    index: 1,
-  ),
-  ChatListElement(
-    chatName: "chat300000000000",
-    chatLastMsg: "пока",
-    chatIcon: Icon(Icons.account_circle_rounded, size: 70),
-    chatStatus: true,
-    index: 2,
-  ),
-  ChatListElement(
-    chatName: "chat488",
-    chatLastMsg: "2222",
-    chatIcon: Icon(Icons.account_circle_rounded, size: 70),
-    chatStatus: false,
-    index: 3,
-  ),
-  ChatListElement(
-    chatName: "chat5856756",
-    chatLastMsg: "ываываыва",
-    chatIcon: Icon(Icons.account_circle_rounded, size: 70),
-    chatStatus: true,
-    index: 4,
-  ),
-  ChatListElement(
-    chatName: "chat6666666666666",
-    chatLastMsg: "хвы",
-    chatIcon: Icon(Icons.account_circle_rounded, size: 70),
-    chatStatus: true,
-    index: 5,
-  ),
-  ChatListElement(
-    chatName: "эмир тиктокер",
-    chatLastMsg: "1234",
-    chatIcon: Icon(Icons.account_circle_rounded, size: 70),
-    chatStatus: true,
-    index: 6,
-  ),
-  ChatListElement(
-    chatName: "эмир тиктокер",
-    chatLastMsg: "idgaf",
-    chatIcon: Icon(Icons.account_circle_rounded, size: 70),
-    chatStatus: true,
-    index: 7,
-  ),
-  ChatListElement(
-    chatName: "эмир тиктокер",
-    chatLastMsg: "германия",
-    chatIcon: Icon(Icons.account_circle_rounded, size: 70),
-    chatStatus: false,
-    index: 8,
-  ),
-];
-
-List<Widget> messageList1 = [
+List<MessageBubble> messageList1 = [
   MessageBubble(text: "вляпалась", isMe: false),
   MessageBubble(text: "врезалась", isMe: false),
   MessageBubble(text: "потеряла голову", isMe: true),
@@ -82,7 +16,7 @@ List<Widget> messageList1 = [
   MessageBubble(text: "привет", isMe: true),
 ];
 
-List<Widget> messageList2 = [
+List<MessageBubble> messageList2 = [
   MessageBubble(text: "я сигма бой", isMe: false),
   MessageBubble(text: "пошла нахуй дура", isMe: false),
   MessageBubble(text: "чем твое безразличие", isMe: true),
@@ -96,22 +30,24 @@ List<Widget> messageList2 = [
   MessageBubble(text: "привет", isMe: true),
 ];
 
-List<List<Widget>> chatList = [
-  messageList1,
-  messageList2,
-  messageList1,
-  messageList2,
-  messageList1,
-  messageList2,
-  messageList1,
-  messageList2,
-]; // its a big cringe momento but emir still hasn't provided me with a copy of the database
+Map<String, List<MessageBubble>> chatList = {
+  "123": messageList1,
+  "222": messageList2,
+  "chat": messageList1,
+  "haha": messageList2,
+  "emir": messageList1,
+  "tiktok": messageList2,
+  "ppp": messageList1,
+  "111": messageList2,
+}; // its a big cringe momento but emir still hasn't provided me with a copy of the database
 
 class MessageBubble extends StatelessWidget {
   final String text;
   final bool isMe;
 
   const MessageBubble({super.key, required this.text, required this.isMe});
+
+  String get message => text;
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +57,9 @@ class MessageBubble extends StatelessWidget {
         margin: const EdgeInsets.all(4),
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: AppColors.primary,
+          color: isMe
+              ? AppColors.myMessageBubble
+              : AppColors.otherMessageBubble,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(text),
@@ -133,15 +71,15 @@ class MessageBubble extends StatelessWidget {
 class ChatListElement extends StatefulWidget {
   final String _chatName;
   final String _chatLastMsg;
-  final Icon _chatIcon;
   final bool _chatStatus;
   final int _index;
+  final bool isMe;
 
   const ChatListElement({
     super.key,
     required this._chatName,
     required this._chatLastMsg,
-    required this._chatIcon,
+    this.isMe = true,
     this._chatStatus = false,
     required this._index,
   });
@@ -155,44 +93,105 @@ class _ChatListElementState extends State<ChatListElement> {
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onHover: (event) => setState(() {
-        _hover = true;
-      }),
-      onExit: (event) => setState(() {
-        _hover = false;
-      }),
-      child: GestureDetector(
-        onTap: () => Tabs.of(context).setIndex(widget._index, widget._chatName),
-        child: Container(
-          height: 100,
-          padding: const EdgeInsets.only(top: 12),
-          color: Tabs.of(context).selectedIndex == widget._index
-              ? AppColors.primaryVariant
-              : _hover
-              ? AppColors.surface
-              : AppColors.chatListBackground,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              widget._chatIcon,
-              Column(
-                children: [
-                  Text(widget._chatName),
-                  const SizedBox(height: 10),
-                  Text(widget._chatLastMsg),
-                ],
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: .end,
-                  children: [
-                    widget._chatStatus ? Icon(Icons.check) : Icon(Icons.close),
-                    // timeLastMsg
-                  ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: MouseRegion(
+        onHover: (event) => setState(() {
+          _hover = true;
+        }),
+        onExit: (event) => setState(() {
+          _hover = false;
+        }),
+        child: GestureDetector(
+          onTap: () =>
+              Tabs.of(context).setIndex(widget._index, widget._chatName),
+          child: Container(
+            height: 200,
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: Tabs.of(context).selectedIndex == widget._index
+                  ? AppColors.primaryVariant
+                  : _hover
+                  ? AppColors.surface
+                  : AppColors.chatListBackground,
+            ),
+            child: Column(
+              mainAxisAlignment: .center,
+              crossAxisAlignment: .center,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: .center,
+                    children: [
+                      Image.asset(
+                        'assets/images/rabbit.png',
+                        width: 70,
+                        height: 70,
+                      ),
+                      const SizedBox(width: 5),
+                      Column(
+                        crossAxisAlignment: .start,
+                        mainAxisAlignment: .start,
+                        children: [
+                          const SizedBox(height: 5),
+                          Text(widget._chatName),
+                          const SizedBox(height: 10),
+                          Text(
+                            widget._chatStatus ? "онлайн" : "был(а) недавно",
+                          ),
+                        ],
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: .end,
+                          children: [
+                            widget.isMe
+                                ? widget._chatStatus
+                                      ? Icon(Icons.done_all)
+                                      : Icon(Icons.check)
+                                : SizedBox.shrink(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                Expanded(
+                  flex: 1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      widget.isMe ? Text("Вы: ") : SizedBox.shrink(),
+                      Text(widget._chatLastMsg),
+                      const Spacer(),
+                      Text("21:43"), // last Msg time
+                    ],
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CustomIconButton(icon: Icon(Icons.call), onPress: () {}),
+                      CustomIconButton(
+                        icon: Icon(Icons.video_call),
+                        onPress: () {},
+                      ),
+                      const Spacer(),
+                      CircleAvatar(
+                        backgroundColor: AppColors.myMessageBubble,
+                        radius: 12,
+                        child: Text("${widget._chatLastMsg.split(" ").length}"),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -224,13 +223,42 @@ class WidgetList extends StatelessWidget {
   }
 }
 
+class ChatList extends StatelessWidget {
+  final Map<String, List<MessageBubble>> _items;
+  final bool reverse;
+
+  const ChatList({super.key, required this._items, this.reverse = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final Axis scrollDirection = Tabs.of(context).scrollDirection;
+    return Container(
+      width: double.infinity,
+      color: AppColors.background,
+      child: ListView.builder(
+        scrollDirection: scrollDirection,
+        reverse: reverse,
+        itemCount: _items.length,
+        itemBuilder: (_, index) {
+          return ChatListElement(
+            chatName: _items.keys.elementAt(index),
+            chatLastMsg: _items[_items.keys.elementAt(index)]!.first.message,
+            index: index,
+            isMe: _items[_items.keys.elementAt(index)]!.first.isMe,
+          );
+        },
+      ),
+    );
+  }
+}
+
 class Tabs extends InheritedWidget {
-  final int selectedIndex;
+  final int? selectedIndex;
   final int animationDuration;
   final bool scrollable;
   final Axis scrollDirection;
-  final String currentChatName;
-  final Function(int, String) setIndex;
+  final String? currentChatName;
+  final Function(int?, String?) setIndex;
 
   const Tabs({
     super.key,
@@ -254,19 +282,21 @@ class Tabs extends InheritedWidget {
 class ChatContent extends StatelessWidget {
   final TextEditingController _controller;
   final VoidCallback _sendMsg;
-  final List<List<Widget>> _items;
-  final FocusNode _focusNode;
+  final Map<String, List<MessageBubble>> _items;
+  final FocusNode? _focusNode;
 
   const ChatContent({
     super.key,
     required this._controller,
     required this._sendMsg,
     required this._items,
-    required this._focusNode,
+    this._focusNode,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (Tabs.of(context).selectedIndex == null) return const SizedBox.shrink();
+
     return Column(
       mainAxisAlignment: .center,
       children: [
@@ -278,18 +308,21 @@ class ChatContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: .center,
             children: [
+              CustomIconButton(
+                icon: Icon(Icons.arrow_back_ios_new),
+                onPress: () => Tabs.of(context).setIndex(null, null),
+              ),
               Column(
                 children: [
                   Builder(
-                    builder: (context) => Text(
-                      Tabs.of(context).currentChatName,
-                    ),
+                    builder: (context) =>
+                        Text(Tabs.of(context).currentChatName!),
                   ),
                   SizedBox(height: 10),
                   Text("был(а) давно"),
                 ],
               ),
-              SizedBox(width: 250),
+              const Spacer(),
               Row(
                 children: [
                   CustomIconButton(
@@ -320,7 +353,9 @@ class ChatContent extends StatelessWidget {
         Expanded(
           flex: 9,
           child: WidgetList(
-            items: _items[Tabs.of(context).selectedIndex],
+            items:
+                _items[_items.keys.elementAt(Tabs.of(context).selectedIndex!)]
+                    as List<Widget>,
             reverse: true,
           ),
         ),
@@ -350,11 +385,8 @@ class ChatContent extends StatelessWidget {
   }
 }
 
-
 class LoginWidget extends StatefulWidget {
-  const LoginWidget({
-    super.key
-  });
+  const LoginWidget({super.key});
   @override
   State<LoginWidget> createState() => _LoginState();
 }

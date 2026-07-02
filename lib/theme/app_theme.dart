@@ -1,41 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:io';
+import 'dart:convert';
 
 class AppColors {
   AppColors._();
 
-  static const background = Color(0xFF121212);
-  static const surface = Color(0xFF1E1E1E);
-  static const surfaceVariant = Color(0xFF2A2A2A);
-  static const surfaceHover = Color.fromARGB(60, 255, 255, 255);
-  static const surfaceTransparent = Colors.transparent;
+  static String path = "assets/themes/theme_orange.json";
+  static final colors =
+      (jsonDecode(File(path).readAsStringSync()) as Map<String, dynamic>).map(
+        (key, color) => MapEntry(key, int.parse(color as String)),
+      );
 
-  static const primary = Color.fromARGB(255, 255, 171, 74);
-  static const primaryVariant = Color.fromARGB(255, 217, 69, 58);
-  static const secondary = Color.fromARGB(255, 255, 219, 100);
+  static int color(String name) => colors[name] ?? 0xFF000000;
 
-  static const textPrimary = Color(0xFFFFFFFF);
-  static const textSecondary = Color(0xFFB0B0B0);
-  static const textHint = Color(0xFF707070);
+  static final background = Color(color("background"));
+  static final surface = Color(color("surface"));
+  static final surfaceVariant = Color(color("surface_variant"));
+  static final surfaceHover = Color(color("surface_hover"));
+  static final surfaceTransparent = Color(color("surface_transparent"));
 
-  static const online = Color.fromARGB(255, 87, 175, 76);
-  static const error = Color(0xFFCF6679);
-  static const warning = Color.fromARGB(255, 255, 218, 7);
+  static final primary = Color(color("primary"));
+  static final primaryVariant = Color(color("primary_variant"));
+  static final secondary = Color(color("secondary"));
 
-  static const chatListBackground = Color(0xFF172129);
-  static const chatBackground = Color(0xFF0D1117);
-  static const myMessageBubble = Color(0xFF2B5278);
-  static const otherMessageBubble = Color(0xFF212D3A);
-  static const inputBar = Color(0xFF1A1F28);
+  static final textPrimary = Color(color("text_primary"));
+  static final textSecondary = Color(color("text_secondary"));
+  static final textHint = Color(color("text_hint"));
 
-  static const surfaceIcon = Colors.white54;
+  static final online = Color(color("online"));
+  static final error = Color(color("error"));
+  static final warning = Color(color("warning"));
+
+  static final chatListBackground = Color(color("chat_list_background"));
+  static final chatBackground = Color(color("chat_background"));
+  static final myMessageBubble = Color(color("my_message_bubble"));
+  static final otherMessageBubble = Color(color("other_message_bubble"));
+  static final inputBar = Color(color("input_bar"));
+
+  static final surfaceIcon = Color(color("surface_icon"));
 }
 
-enum ThemeList { 
-  orange; 
-  // red, 
-  // blue, 
-  // lightBlue, 
+enum ThemeList {
+  orange;
+  // red,
+  // blue,
+  // lightBlue,
   // green;
 
   ThemeData get theme => switch (this) {
@@ -57,7 +67,7 @@ class AppTheme {
     fontFamily: GoogleFonts.jetBrainsMono().fontFamily!,
 
     // AppBar
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       backgroundColor: AppColors.surface,
       elevation: 0,
       centerTitle: false,
@@ -69,7 +79,7 @@ class AppTheme {
     ),
 
     // NavigationRail
-    navigationRailTheme: const NavigationRailThemeData(
+    navigationRailTheme: NavigationRailThemeData(
       backgroundColor: AppColors.surface,
       selectedIconTheme: IconThemeData(color: AppColors.primary),
       unselectedIconTheme: IconThemeData(color: AppColors.textSecondary),
@@ -77,7 +87,7 @@ class AppTheme {
     ),
 
     // BottomNavigationBar
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: AppColors.surface,
       selectedItemColor: AppColors.primary,
       unselectedItemColor: AppColors.textSecondary,
@@ -99,11 +109,11 @@ class AppTheme {
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide.none,
       ),
-      hintStyle: const TextStyle(color: AppColors.textHint),
+      hintStyle: TextStyle(color: AppColors.textHint),
     ),
 
     // Text
-    textTheme: const TextTheme(
+    textTheme: TextTheme(
       headlineLarge: TextStyle(color: AppColors.textPrimary, fontSize: 24),
       titleMedium: TextStyle(color: AppColors.textPrimary, fontSize: 16),
       bodyLarge: TextStyle(color: AppColors.textPrimary, fontSize: 14),
@@ -112,7 +122,7 @@ class AppTheme {
     ),
 
     // Icon
-    iconTheme: const IconThemeData(color: AppColors.textSecondary),
+    iconTheme: IconThemeData(color: AppColors.textSecondary),
 
     iconButtonTheme: IconButtonThemeData(
       style: IconButton.styleFrom(
@@ -124,7 +134,7 @@ class AppTheme {
     ),
 
     // Divider
-    dividerTheme: const DividerThemeData(
+    dividerTheme: DividerThemeData(
       color: AppColors.surfaceVariant,
       thickness: 1,
     ),

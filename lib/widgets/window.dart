@@ -8,10 +8,7 @@ class MyAppBar extends StatelessWidget {
   final String name =
       "supernova*"; // тут можно и текстом и иконкой, сам смотри че выберешь
 
-  const MyAppBar({
-    super.key,
-    this._needSearch = true,
-  });
+  const MyAppBar({super.key, this._needSearch = true});
 
   @override
   Widget build(BuildContext context) {
@@ -44,8 +41,13 @@ class MyAppBar extends StatelessWidget {
 
 class HeaderBar extends StatelessWidget {
   final WindowManager _windowManager;
+  final VoidCallback maximize;
 
-  const HeaderBar({super.key, required this._windowManager});
+  const HeaderBar({
+    super.key,
+    required this._windowManager,
+    required this.maximize,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +69,7 @@ class HeaderBar extends StatelessWidget {
             CustomIconButton(
               icon: Icon(Icons.crop_square),
               onPress: () async {
-                await _windowManager.maximize();
+                maximize();
               },
             ),
             CustomIconButton(

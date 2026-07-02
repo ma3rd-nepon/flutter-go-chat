@@ -24,8 +24,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  WindowManager windowManager;
-  MyApp({super.key, required this.windowManager});
+  final WindowManager windowManager;
+  const MyApp({super.key, required this.windowManager});
 
   @override
   Widget build(BuildContext context) {

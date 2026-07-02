@@ -13,10 +13,11 @@ class MainAppManager extends StatefulWidget {
   State<MainAppManager> createState() => _MainAppState();
 }
 
-class _MainAppState extends State<MainAppManager> {
+class _MainAppState extends State<MainAppManager> with WindowListener {
   final _navigationManager = PageManager();
   final _overlayManager = PageManager();
   bool _loggedIn = false;
+  bool _isMaximized = false;
 
   @override
   void initState() {
@@ -24,11 +25,16 @@ class _MainAppState extends State<MainAppManager> {
     _initPages();
     _navigationManager.addListener(() => setState(() {}));
     _overlayManager.addListener(() => setState(() {}));
+    windowManager.addListener(this);
   }
 
   void _initPages() {
     List<PageEntry> defaultPages = [
-      const PageEntry(id: PageId.chat, page: ChatsPage(), canBeClosed: false),
+      const PageEntry(
+        id: PageId.chat,
+        page: ChatsPageMobile(),
+        canBeClosed: false,
+      ),
       const PageEntry(id: PageId.calls, page: CallsPage(), canBeClosed: false),
       const PageEntry(
         id: PageId.settings,
@@ -62,6 +68,20 @@ class _MainAppState extends State<MainAppManager> {
     }
   }
 
+  @override
+  void onWindowMaximize() => setState(() => _isMaximized = true);
+
+  @override
+  void onWindowUnmaximize() => setState(() => _isMaximized = false);
+
+  void _toggleMaximize() {
+    if (_isMaximized) {
+      windowManager.unmaximize();
+    } else {
+      windowManager.maximize();
+    }
+  }
+
   void onLoginSuccess() {
     _overlayManager.removePageForever(PageId.login);
     setState(() => _loggedIn = true);
@@ -71,6 +91,7 @@ class _MainAppState extends State<MainAppManager> {
   void dispose() {
     _navigationManager.dispose();
     _overlayManager.dispose();
+    windowManager.removeListener(this);
     super.dispose();
   }
 
@@ -83,7 +104,7 @@ class _MainAppState extends State<MainAppManager> {
     return Scaffold(
       body: Column(
         children: [
-          HeaderBar(windowManager: windowManager),
+          HeaderBar(windowManager: windowManager, maximize: _toggleMaximize),
           Expanded(
             child: IndexedStack(
               index: _overlayManager.currentIndex,
@@ -110,11 +131,15 @@ class WindowFrame extends StatefulWidget {
 }
 
 class _WindowFrameState extends State<WindowFrame> {
-
-   @override
+  @override
   void initState() {
     super.initState();
     widget._navManager.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -127,12 +152,17 @@ class _WindowFrameState extends State<WindowFrame> {
             mainAxisAlignment: .center,
             crossAxisAlignment: .center,
             children: [
-              Expanded(flex: 1, child: AppRailBar(navManager: widget._navManager)),
+              Expanded(
+                flex: 1,
+                child: AppRailBar(navManager: widget._navManager),
+              ),
               Expanded(
                 flex: 3,
                 child: IndexedStack(
                   index: widget._navManager.currentIndex,
-                  children: widget._navManager.pages.map((e) => e.page).toList(),
+                  children: widget._navManager.pages
+                      .map((e) => e.page)
+                      .toList(),
                 ),
               ),
             ],
