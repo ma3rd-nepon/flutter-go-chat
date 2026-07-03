@@ -12,6 +12,8 @@ class ChatBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final inherited = ChatInherited.of(context);
+    final db = inherited.db;
+
     if (inherited.currentChatId == null) return const SizedBox.shrink();
     void sendMsg() => (value) {
       final text = _controller.text.trim();
@@ -37,12 +39,23 @@ class ChatBody extends StatelessWidget {
               ),
               Column(
                 children: [
-                  Builder(
-                    builder: (context) => Text(
-                      inherited.chats[int.parse(
-                        inherited.currentChatId!,
-                      )]['name'],
-                    ),
+                  FutureBuilder(
+                    future: db.getChat(inherited.currentChatId!),
+                    builder: (_, snapshot) {
+                      String text = "";
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        text = "...";
+                      }
+                      if (snapshot.hasError) {
+                        text = "Error: ${snapshot.error}";
+                      }
+                      
+                      if (text.isEmpty) {
+                        text = snapshot.data?.name ?? "...";
+                      }
+
+                      return Text(text);
+                    },
                   ),
                   SizedBox(height: 10),
                   Text(inherited.currentChatStatus), // websocket poll

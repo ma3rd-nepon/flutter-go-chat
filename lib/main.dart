@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:flutter_go_chat/theme/app_theme.dart';
 import 'package:flutter_go_chat/app.dart';
+import 'package:flutter_go_chat/services/db_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
+  DatabaseService().openDB("first.db");
 
   const options = WindowOptions(
     size: Size(1024, 768),

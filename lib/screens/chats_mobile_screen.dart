@@ -3,6 +3,7 @@ import 'package:flutter_go_chat/services/db_service.dart';
 import 'package:flutter_go_chat/widgets/chat/chat_tabs.dart';
 import 'package:flutter_go_chat/widgets/chat/chat_list_view.dart';
 import 'package:flutter_go_chat/widgets/chat/chat_body.dart';
+import 'package:drift/drift.dart';
 
 
 class ChatsScreenMobile extends StatefulWidget {
@@ -15,29 +16,18 @@ class ChatsScreenMobile extends StatefulWidget {
 
 class _ChatsScreenMobileState extends State<ChatsScreenMobile> {
   final controller = TextEditingController();
-  List<Map<String, dynamic>> _chats = [];
-  List<Map<String, dynamic>> _messages = [];
   int? _currentChatId;
-  late final DatabaseService _db;
+  late final _db = DatabaseService();
 
   @override
   void initState() {
     super.initState();
-    _db = DatabaseService();
-    _db.init().then((_) => _loadChats());
-  }
-
-  Future<void> _loadChats() async {
-    final chats = await _db.getUserChats(widget.currentUserId);
-    setState(() => _chats = chats);
   }
 
   Future<void> _setChat(int? chatId) async {
     if (chatId != null) {
-      final messages = await _db.getChatHistory(chatId);
       setState(() {
         _currentChatId = chatId;
-        _messages = messages;
       });
     } else {
       setState(() {
@@ -49,31 +39,16 @@ class _ChatsScreenMobileState extends State<ChatsScreenMobile> {
   Future<void> _sendMessage(String text) async {
     // final text = controller.text.trim();
     if (text.isEmpty || _currentChatId == null) return;
-
-    await _db.sendMessage(
-      chatId: _currentChatId!,
-      senderId: widget.currentUserId,
-      content: text
+    final message = MessagesCompanion(
+      chatId: Value(_currentChatId!),
+      senderId: Value(widget.currentUserId),
+      content: Value(text),
+      createdAt: Value(DateTime.now())
     );
 
-    await _setChat(_currentChatId!); // refresh message list ???
+    await _db.sendMessage(message);
 
-    // setState(() {
-    //   items[items.keys.elementAt(selectedIndex!)]!.insert(0, MessageBubble(text: text, isMe: true));
-    //   controller.clear();
-    // });
   }
-
-  // void setIndex(int? index, String? chatName) {
-  //   setState(() {
-  //     selectedIndex = index;
-  //     selectedChatName = chatName;
-  //   });
-  // }
-
-  // void _CloseChat() {
-  //   Tabs.of(context).setIndex(null, null);
-  // }
 
   @override
   void dispose() {
@@ -88,9 +63,7 @@ class _ChatsScreenMobileState extends State<ChatsScreenMobile> {
         child: ChatInherited(
           db: _db,
           currentUserId: widget.currentUserId,
-          currentChatId: _currentChatId?.toString(),
-          chats: _chats,
-          messages: _messages,
+          currentChatId: _currentChatId,
           setChat: _setChat,
           sendMessage: _sendMessage,
           child: IndexedStack(

@@ -1,11 +1,11 @@
 import "package:flutter/material.dart";
 import "package:flutter_go_chat/theme/app_theme.dart";
 import 'package:flutter_go_chat/widgets/chat/chat_tabs.dart';
-
+import 'package:flutter_go_chat/services/db_service.dart';
 class ChatTile extends StatefulWidget {
   final int chatId;
   final String name;
-  final Map<String, dynamic> lastMsg;
+  final Message lastMsg;
   final String type;
   final VoidCallback onTap;
 
@@ -28,7 +28,7 @@ class _ChatTileState extends State<ChatTile> {
   @override
   Widget build(BuildContext context) {
     final inherited = ChatInherited.of(context);
-    final bool isMe = widget.lastMsg['sender_id'] == inherited.currentUserId;
+    final bool isMe = widget.lastMsg.senderId == inherited.currentUserId;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -99,7 +99,7 @@ class _ChatTileState extends State<ChatTile> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       isMe ? Text("Вы: ") : SizedBox.shrink(),
-                      Text(widget.lastMsg['content']),
+                      Text(widget.lastMsg.content ?? "None"),
                       const Spacer(),
                       Text("21:43"), // last Msg time
                     ],
@@ -122,7 +122,7 @@ class _ChatTileState extends State<ChatTile> {
                               backgroundColor: AppColors.myMessageBubble,
                               radius: 12,
                               child: Text(
-                                "${widget.lastMsg['content'].split(' ').length}",
+                                "${widget.lastMsg.content?.split(' ').length}",
                               ),
                             ),
                     ],
