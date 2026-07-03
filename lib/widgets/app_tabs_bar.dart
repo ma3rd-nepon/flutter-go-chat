@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_dart_e2e/services/page_manager.dart';
-import 'package:go_dart_e2e/theme/app_theme.dart';
+import 'package:flutter_go_chat/services/page_manager.dart';
+import 'package:flutter_go_chat/theme/app_theme.dart';
 
 class AppBottomBar extends StatelessWidget {
   final PageManager navManager;

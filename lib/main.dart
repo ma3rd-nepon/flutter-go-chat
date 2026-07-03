@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_dart_e2e/widgets/app.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:go_dart_e2e/theme/app_theme.dart';
+import 'package:flutter_go_chat/theme/app_theme.dart';
+import 'package:flutter_go_chat/app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'supernova',
       theme: ThemeList.orange.theme,
-      home: MainAppManager(windowManager: windowManager),
+      home: AppShell(),
     );
   }
 }

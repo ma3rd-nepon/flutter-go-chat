@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_dart_e2e/theme/app_theme.dart';
-import 'package:go_dart_e2e/widgets/buttons.dart';
+import 'package:flutter_go_chat/theme/app_theme.dart';
+import 'package:flutter_go_chat/widgets/buttons.dart';
 import 'package:window_manager/window_manager.dart';
 
 class MyAppBar extends StatelessWidget {
@@ -30,7 +30,7 @@ class MyAppBar extends StatelessWidget {
               : SizedBox(width: 100),
           Row(
             children: [
-              CustomIconButton(icon: Icon(Icons.notifications), onPress: () {}),
+              IconButton(icon: Icon(Icons.notifications), onPressed: () {}),
             ],
           ),
         ],
@@ -39,20 +39,18 @@ class MyAppBar extends StatelessWidget {
   }
 }
 
-class HeaderBar extends StatelessWidget {
-  final WindowManager _windowManager;
+class WindowControls extends StatelessWidget {
   final VoidCallback maximize;
 
-  const HeaderBar({
+  const WindowControls({
     super.key,
-    required this._windowManager,
     required this.maximize,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onPanStart: (_) => _windowManager.startDragging(),
+      onPanStart: (_) => windowManager.startDragging(),
       child: Container(
         height: 30,
         color: AppColors.background,
@@ -60,22 +58,22 @@ class HeaderBar extends StatelessWidget {
           mainAxisAlignment: .end,
           crossAxisAlignment: .center,
           children: [
-            CustomIconButton(
+            IconButton(
               icon: Icon(Icons.horizontal_rule),
-              onPress: () async {
-                await _windowManager.minimize();
+              onPressed: () async {
+                await windowManager.minimize();
               },
             ),
-            CustomIconButton(
+            IconButton(
               icon: Icon(Icons.crop_square),
-              onPress: () async {
+              onPressed: () async {
                 maximize();
               },
             ),
-            CustomIconButton(
+            IconButton(
               icon: Icon(Icons.close),
-              onPress: () async {
-                await _windowManager.close();
+              onPressed: () async {
+                await windowManager.close();
               },
             ),
           ],
