@@ -33,5 +33,6 @@ dev_dependencies:
 flutter:
   assets:
   - assets/images/rabbit.png
+  - assets/themes/theme_orange.json
   
   uses-material-design: true

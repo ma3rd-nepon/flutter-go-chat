@@ -8,6 +8,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
   DatabaseService().openDB("database.db");
+  await AppColors.init("assets/themes/theme_orange.json");
 
   const options = WindowOptions(
     size: Size(1024, 768),

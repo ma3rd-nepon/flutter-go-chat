@@ -122,21 +122,9 @@ class DatabaseService {
   }
 
   Future<void> openDB(String name) async {
-    final dbFolder = Platform.isWindows || Platform.isLinux || Platform.isMacOS
-        ? Directory.current.path
-        : (await getApplicationDocumentsDirectory()).path;
-    final file = File(p.join(dbFolder, 'assets', 'db', name));
-    // if (!await file.exists()) {
-    //   try {
-    //     final data = await rootBundle.load('assets/db/$name');
-    //     final bytes = data.buffer.asUint8List();
-    //     await file.writeAsBytes(bytes);
-    //   } catch (e) {
-    //     throw FileSystemException("Unable to load $name: $e");
-    //   }
-    // }
+    final dbFolder = await getApplicationSupportDirectory();
+    final file = File(p.join(dbFolder.path, 'flutter_go_chat', 'db', name));
 
-    // _db = MyDatabase(NativeDatabase.createInBackground(file));
     _db = MyDatabase(file);
     _isInit = true;
   }

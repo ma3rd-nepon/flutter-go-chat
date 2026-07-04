@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:io';
 import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
 
 class AppColors {
   AppColors._();
 
-  static String path = "assets/themes/theme_orange.json";
-  static final colors =
-      (jsonDecode(File(path).readAsStringSync()) as Map<String, dynamic>).map(
-        (key, color) => MapEntry(key, int.parse(color as String)),
-      );
+  static late Map<String, int> colors;
+
+  static Future<void> init(String theme) async {
+    final jsonString = await rootBundle.loadString(theme);
+
+    colors = (jsonDecode(jsonString) as Map<String, dynamic>).map(
+      (key, value) => MapEntry(
+        key,
+        int.parse(value as String),
+      ),
+    );
+  }
 
   static int color(String name) => colors[name] ?? 0xFF000000;
 
