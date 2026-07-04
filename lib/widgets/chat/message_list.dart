@@ -3,8 +3,6 @@ import "package:flutter_go_chat/theme/app_theme.dart";
 import 'package:flutter_go_chat/widgets/chat/chat_tabs.dart';
 import 'package:flutter_go_chat/widgets/chat/message_bubble.dart';
 import 'package:flutter_go_chat/services/db_service.dart';
-import 'package:drift/drift.dart';
-
 
 class MessageList extends StatelessWidget {
   const MessageList({super.key});
@@ -18,7 +16,9 @@ class MessageList extends StatelessWidget {
       return SizedBox.shrink();
     }
 
-    final Stream<List<Message>> messagesStream = db.watchAllMessages(inherited.currentChatId!);
+    final Stream<List<Message>> messagesStream = db.watchAllMessages(
+      inherited.currentChatId!,
+    );
 
     return Container(
       width: double.infinity,
@@ -30,7 +30,7 @@ class MessageList extends StatelessWidget {
             return Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text("ОШипка: ${snapshot.error}"));
+            return Center(child: Text("ERROR MessageList: ${snapshot.error}"));
           }
 
           final messages = snapshot.data ?? [];
@@ -40,20 +40,19 @@ class MessageList extends StatelessWidget {
           }
 
           return ListView.builder(
-        scrollDirection: Axis.vertical,
-        reverse: false,
-        itemCount: messages.length,
-        itemBuilder: (_, index) {
-          return MessageBubble(
-            text: messages[index].content ?? "Сообщение удалено", 
-            isMe: messages[index].senderId == inherited.currentUserId
+            controller: inherited.scrollController,
+            scrollDirection: Axis.vertical,
+            reverse: false,
+            itemCount: messages.length,
+            itemBuilder: (_, index) {
+              return MessageBubble(
+                message: messages[index],
+                isMe: messages[index].senderId == inherited.currentUserId,
+              );
+            },
           );
         },
-      );
-        }
-      )
-      
-      
+      ),
     );
   }
 }

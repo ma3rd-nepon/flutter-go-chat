@@ -5,7 +5,6 @@ import 'package:flutter_go_chat/widgets/chat/chat_list_view.dart';
 import 'package:flutter_go_chat/widgets/chat/chat_body.dart';
 import 'package:drift/drift.dart';
 
-
 class ChatsScreenMobile extends StatefulWidget {
   final int currentUserId;
   const ChatsScreenMobile({super.key, required this.currentUserId});
@@ -15,45 +14,43 @@ class ChatsScreenMobile extends StatefulWidget {
 }
 
 class _ChatsScreenMobileState extends State<ChatsScreenMobile> {
-  final controller = TextEditingController();
   int? _currentChatId;
   late final _db = DatabaseService();
+  final scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
   }
 
-  Future<void> _setChat(int? chatId) async {
-    if (chatId != null) {
-      setState(() {
-        _currentChatId = chatId;
-      });
-    } else {
-      setState(() {
-        _currentChatId = chatId;
-      });
-    }
+  void _setChat(int? chatId) async {
+    setState(() {
+      _currentChatId = chatId;
+    });
   }
 
-  Future<void> _sendMessage(String text) async {
-    // final text = controller.text.trim();
+  void _sendMessage(String text) async {
     if (text.isEmpty || _currentChatId == null) return;
     final message = MessagesCompanion(
       chatId: Value(_currentChatId!),
       senderId: Value(widget.currentUserId),
       content: Value(text),
-      createdAt: Value(DateTime.now())
+      type: const Value("text")
     );
 
     await _db.sendMessage(message);
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.hasClients) {
+        scrollController.animateTo(scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 150), curve: Curves.easeOut);
+      }
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
-    controller.dispose();
+    scrollController.dispose();
   }
 
   @override
@@ -66,13 +63,11 @@ class _ChatsScreenMobileState extends State<ChatsScreenMobile> {
           currentChatId: _currentChatId,
           setChat: _setChat,
           sendMessage: _sendMessage,
+          scrollController: scrollController,
           child: IndexedStack(
             alignment: AlignmentDirectional.centerStart,
             index: _currentChatId == null ? 0 : 1,
-            children: [
-              ChatListView(),
-              ChatBody()
-            ],
+            children: [ChatListView(), ChatBody()],
           ),
         ),
       ),

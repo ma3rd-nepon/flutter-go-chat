@@ -3,18 +3,14 @@ import "package:flutter_go_chat/theme/app_theme.dart";
 import 'package:flutter_go_chat/widgets/chat/chat_tabs.dart';
 import 'package:flutter_go_chat/services/db_service.dart';
 class ChatTile extends StatefulWidget {
-  final int chatId;
-  final String name;
-  final Message lastMsg;
-  final String type;
+  final Chat chat;
+  final Message? lastMsg;
   final VoidCallback onTap;
 
   const ChatTile({
     super.key,
-    required this.name,
     required this.lastMsg,
-    required this.chatId,
-    required this.type,
+    required this.chat,
     required this.onTap,
   });
 
@@ -28,7 +24,7 @@ class _ChatTileState extends State<ChatTile> {
   @override
   Widget build(BuildContext context) {
     final inherited = ChatInherited.of(context);
-    final bool isMe = widget.lastMsg.senderId == inherited.currentUserId;
+    final bool isMe = widget.lastMsg?.senderId == inherited.currentUserId;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -40,17 +36,17 @@ class _ChatTileState extends State<ChatTile> {
           _hover = false;
         }),
         child: GestureDetector(
-          onTap: () => widget.onTap,
+          onTap: widget.onTap,
           child: Container(
             height: 200,
             padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              color: inherited.currentChatId == widget.chatId.toString()
+              color: inherited.currentChatId == widget.chat.id
                   ? AppColors.primaryVariant
                   : _hover
-                  ? AppColors.surface
-                  : AppColors.chatListBackground,
+                  ? AppColors.chatListBackground
+                  : AppColors.surface,
             ),
             child: Column(
               mainAxisAlignment: .center,
@@ -73,9 +69,9 @@ class _ChatTileState extends State<ChatTile> {
                         mainAxisAlignment: .start,
                         children: [
                           const SizedBox(height: 5),
-                          Text(widget.name),
+                          Text(widget.chat.name ?? "NAME ERROR"),
                           const SizedBox(height: 10),
-                          Text("был(а) недавно"), // websocket poll
+                          widget.chat.type == "private" ? Text("был(а) недавно") : SizedBox(height: 20), // websocket poll
                           // widget.chatStatus ? "онлайн" : "был(а) недавно",
                         ],
                       ),
@@ -99,9 +95,9 @@ class _ChatTileState extends State<ChatTile> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       isMe ? Text("Вы: ") : SizedBox.shrink(),
-                      Text(widget.lastMsg.content ?? "None"),
+                      Text(widget.lastMsg?.content ?? "None"),
                       const Spacer(),
-                      Text("21:43"), // last Msg time
+                      Text("${widget.lastMsg?.createdAt.hour}:${widget.lastMsg?.createdAt.minute}"), // last Msg time
                     ],
                   ),
                 ),
@@ -122,7 +118,7 @@ class _ChatTileState extends State<ChatTile> {
                               backgroundColor: AppColors.myMessageBubble,
                               radius: 12,
                               child: Text(
-                                "${widget.lastMsg.content?.split(' ').length}",
+                                "${widget.lastMsg?.content?.split(' ').length}",
                               ),
                             ),
                     ],

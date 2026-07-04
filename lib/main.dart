@@ -7,7 +7,7 @@ import 'package:flutter_go_chat/services/db_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
-  DatabaseService().openDB("first.db");
+  DatabaseService().openDB("database.db");
 
   const options = WindowOptions(
     size: Size(1024, 768),

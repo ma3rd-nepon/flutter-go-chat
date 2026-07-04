@@ -1,5 +1,5 @@
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:path/path.dart' as p;
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
@@ -32,7 +32,8 @@ class Chats extends Table {
   )();
 
   IntColumn get pinnedMessageId => integer().nullable()();
-  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get createdAt =>
+      dateTime().withDefault(currentDateAndTime).nullable()();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 }
 
@@ -43,7 +44,7 @@ class ChatMembers extends Table {
 
   // ✅ ИСПРАВЛЕНО: Добавлен NOT NULL в customConstraint + default
   TextColumn get role => text().customConstraint(
-    "NOT NULL CHECK(role IN ('owner'','admin','member'))",
+    "NOT NULL CHECK(role IN ('owner','admin','member'))",
   )();
 
   DateTimeColumn get joinedAt => dateTime().withDefault(currentDateAndTime)();
@@ -63,7 +64,7 @@ class Messages extends Table {
   IntColumn get replyTo => integer().nullable()();
 
   TextColumn get type => text().customConstraint(
-    "NOT NULL CHECK(type IN ('text','photo','video','voice','document','sticker'','service'))",
+    "NOT NULL CHECK(type IN ('text','photo','video','voice','document','sticker','service'))",
   )();
 
   TextColumn get content => text().nullable()();
@@ -121,20 +122,22 @@ class DatabaseService {
   }
 
   Future<void> openDB(String name) async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, name));
+    final dbFolder = Platform.isWindows || Platform.isLinux || Platform.isMacOS
+        ? Directory.current.path
+        : (await getApplicationDocumentsDirectory()).path;
+    final file = File(p.join(dbFolder, 'assets', 'db', name));
+    // if (!await file.exists()) {
+    //   try {
+    //     final data = await rootBundle.load('assets/db/$name');
+    //     final bytes = data.buffer.asUint8List();
+    //     await file.writeAsBytes(bytes);
+    //   } catch (e) {
+    //     throw FileSystemException("Unable to load $name: $e");
+    //   }
+    // }
 
-    if (!await file.exists()) {
-      try {
-        final data = await rootBundle.load('assets/db/$name');
-        final bytes = data.buffer.asUint8List();
-        await file.writeAsBytes(bytes);
-      } catch (e) {
-        throw FileSystemException("Unable to load $name: $e");
-      }
-    }
-
-    _db = MyDatabase(NativeDatabase.createInBackground(file));
+    // _db = MyDatabase(NativeDatabase.createInBackground(file));
+    _db = MyDatabase(file);
     _isInit = true;
   }
 
@@ -143,9 +146,9 @@ class DatabaseService {
     return _db.watchAllMessages(currentChatId);
   }
 
-  Stream<List<Chat>> watchAllChats(int currentUserId) {
+  Stream<List<(Chat, Message?)>> watchAllChats() {
     checkInit();
-    return _db.watchAllChats(currentUserId);
+    return _db.watchAllChats();
   }
 
   Future<List<Message>> getChatHistory(int currentChatId) {
@@ -157,6 +160,7 @@ class DatabaseService {
   }
 
   Future<int> sendMessage(MessagesCompanion message) {
+    _db.updateChat(message.chatId.value);
     return _db.addMessage(message);
   }
 
@@ -169,19 +173,80 @@ class DatabaseService {
   tables: [Users, Chats, ChatMembers, Messages, Attachments, MessageStates],
 )
 class MyDatabase extends _$MyDatabase {
-  MyDatabase(QueryExecutor e) : super(e);
+  MyDatabase(File file) : super(_openConnection(file));
 
   @override
   int get schemaVersion => 1;
 
-  Future<int> addMessage(MessagesCompanion message) {
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      // ✅ ЭТО ВЫЗОВЕТСЯ ПРИ ПЕРВОМ СОЗДАНИИ БД
+      onCreate: (m) async {
+        print('🔄 СОЗДАЁМ ТАБЛИЦЫ...');
+        await m.createAll(); // 👈 ВАЖНО!
+        print('✅ ТАБЛИЦЫ СОЗДАНЫ!');
+
+        print('ДОБАВЛЯЕМ ТЕСТОВЫЕ ДАННЫЕ');
+
+        await into(
+          chats,
+        ).insert(ChatsCompanion.insert(type: "group", name: Value("123")));
+
+        await into(
+          chats,
+        ).insert(ChatsCompanion.insert(type: "group", name: Value("chat 2")));
+
+        await into(
+          chats,
+        ).insert(ChatsCompanion.insert(type: "group", name: Value("chat 3")));
+
+        await into(
+          chats,
+        ).insert(ChatsCompanion.insert(type: "group", name: Value("chat 4")));
+
+        await into(users).insert(
+          UsersCompanion.insert(username: "danil", displayName: "Danil"),
+        );
+
+        await into(
+          users,
+        ).insert(UsersCompanion.insert(username: "emir", displayName: "Emir"));
+
+        await into(users).insert(
+          UsersCompanion.insert(username: "zxcursed", displayName: "ZXCursed"),
+        );
+
+        await into(users).insert(
+          UsersCompanion.insert(username: "rimanetcz", displayName: "Rimanec"),
+        );
+      },
+      // ✅ ЭТО ВЫЗОВЕТСЯ ПРИ ОБНОВЛЕНИИ
+      onUpgrade: (m, from, to) async {
+        print('🔄 Обновление с $from до $to');
+      },
+    );
+  }
+
+  static LazyDatabase _openConnection(File file) {
+    return LazyDatabase(() async {
+      // final dbFolder = Platform.isWindows || Platform.isLinux || Platform.isMacOS
+      //   ? Directory.current.path
+      //   : (await getApplicationDocumentsDirectory()).path;
+      // final file = File(p.join(dbFolder, '\\assets\\', name));
+
+      return NativeDatabase.createInBackground(file);
+    });
+  }
+
+  Future<int> addMessage(MessagesCompanion message) async {
     return into(messages).insert(message);
   }
 
   Future<List<Map<String, dynamic>>> getMessages(int chatId) async {
     return await (select(messages)
           ..where((msg) => msg.chatId.equals(chatId))
-          ..orderBy([(m) => OrderingTerm.desc(m.createdAt)]))
+          ..orderBy([(m) => OrderingTerm.asc(m.createdAt)]))
         .get()
         .then((list) => list.map((m) => m.toJson()).toList());
   }
@@ -193,10 +258,46 @@ class MyDatabase extends _$MyDatabase {
         .watch();
   }
 
-  Stream<List<Chat>> watchAllChats(int currentUserId) {
-    return (select(
-      chats,
-    )..orderBy([(chat) => OrderingTerm.asc(chat.updatedAt)])).watch();
+  Stream<List<(Chat, Message?)>> watchAllChats() {
+    final query = select(chats)..orderBy([(c) => OrderingTerm.asc(c.updatedAt)]);
+
+    return query.watch().asyncMap((chatList) async {
+      final result = <(Chat, Message?)>[];
+
+      for (final chat in chatList) {
+        final lastMessage =
+            await (select(messages)
+                  ..where((m) => m.chatId.equals(chat.id))
+                  ..orderBy([(m) => OrderingTerm.desc(m.createdAt)])
+                  ..limit(1))
+                .getSingleOrNull();
+
+        result.add((chat, lastMessage));
+      }
+      return result;
+    });
+  }
+
+  Stream<List<(Chat, Message?)>> watchAllChatsV2() {
+    final chatStream = select(chats).watch();
+    final messagesStream = select(messages).watch();
+
+    return Rx.combineLatest2(chatStream, messagesStream, (
+      List<Chat> chatList,
+      List<Message> messagesList,
+    ) {
+      return chatList.map((chat) {
+        final chatMessages = messagesList
+            .where((m) => m.chatId == chat.id)
+            .toList();
+
+        chatMessages.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+        final lastMessage = chatMessages.isEmpty ? null : chatMessages.first;
+
+        return (chat, lastMessage);
+      }).toList();
+    });
   }
 
   Future<List<Message>> getChatHistory(int currentChatId) {
@@ -207,6 +308,12 @@ class MyDatabase extends _$MyDatabase {
   }
 
   Future<Chat?> getChat(int chatId) {
-    return (select(chats)..where((chat) => chat.id.equals(chatId))).getSingleOrNull();
+    return (select(
+      chats,
+    )..where((chat) => chat.id.equals(chatId))).getSingleOrNull();
+  }
+
+  Future<void> updateChat(int chatId) {
+    return (update(chats)..where((chat) => chat.id.equals(chatId))).write(ChatsCompanion(updatedAt: Value(DateTime.now())));
   }
 }

@@ -8,6 +8,7 @@ class ChatInherited extends InheritedWidget { // сделать синхру ч�
   final Function(int? chatId) setChat;               // переключить чат
   final Function(String text) sendMessage;   
   final String currentChatStatus = "был(а) недавно";
+  final ScrollController scrollController;
 
   const ChatInherited({
     super.key,
@@ -16,7 +17,8 @@ class ChatInherited extends InheritedWidget { // сделать синхру ч�
     required this.currentUserId,
     required this.currentChatId,
     required this.setChat,
-    required this.sendMessage
+    required this.sendMessage,
+    required this.scrollController
   });
 
   static ChatInherited of(BuildContext context) {

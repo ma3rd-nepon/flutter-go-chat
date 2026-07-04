@@ -15,12 +15,12 @@ class ChatBody extends StatelessWidget {
     final db = inherited.db;
 
     if (inherited.currentChatId == null) return const SizedBox.shrink();
-    void sendMsg() => (value) {
+    void sendMsg() {
       final text = _controller.text.trim();
       inherited.sendMessage(text);
       _controller.clear();
       _focusNode.requestFocus();
-    };
+    }
 
     return Column(
       mainAxisAlignment: .center,
@@ -49,7 +49,7 @@ class ChatBody extends StatelessWidget {
                       if (snapshot.hasError) {
                         text = "Error: ${snapshot.error}";
                       }
-                      
+
                       if (text.isEmpty) {
                         text = snapshot.data?.name ?? "...";
                       }
@@ -105,7 +105,7 @@ class ChatBody extends StatelessWidget {
               ),
             ),
             IconButton(
-            onPressed: () => sendMsg(),
+              onPressed: () => sendMsg(),
               icon: Icon(Icons.send),
               iconSize: 25,
             ),

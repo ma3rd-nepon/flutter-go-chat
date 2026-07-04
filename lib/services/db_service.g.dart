@@ -640,7 +640,8 @@ class $ChatsTable extends Chats with TableInfo<$ChatsTable, Chat> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK(type IN ("private","group","channel"))',
+    $customConstraints:
+        'NOT NULL CHECK(type IN (\'private\',\'group\',\'channel\'))',
   );
   static const VerificationMeta _pinnedMessageIdMeta = const VerificationMeta(
     'pinnedMessageId',
@@ -660,7 +661,7 @@ class $ChatsTable extends Chats with TableInfo<$ChatsTable, Chat> {
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
@@ -763,7 +764,7 @@ class $ChatsTable extends Chats with TableInfo<$ChatsTable, Chat> {
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
-      )!,
+      ),
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -782,14 +783,14 @@ class Chat extends DataClass implements Insertable<Chat> {
   final String? name;
   final String type;
   final int? pinnedMessageId;
-  final DateTime createdAt;
+  final DateTime? createdAt;
   final DateTime? updatedAt;
   const Chat({
     required this.id,
     this.name,
     required this.type,
     this.pinnedMessageId,
-    required this.createdAt,
+    this.createdAt,
     this.updatedAt,
   });
   @override
@@ -803,7 +804,9 @@ class Chat extends DataClass implements Insertable<Chat> {
     if (!nullToAbsent || pinnedMessageId != null) {
       map['pinned_message_id'] = Variable<int>(pinnedMessageId);
     }
-    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || createdAt != null) {
+      map['created_at'] = Variable<DateTime>(createdAt);
+    }
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
     }
@@ -818,7 +821,9 @@ class Chat extends DataClass implements Insertable<Chat> {
       pinnedMessageId: pinnedMessageId == null && nullToAbsent
           ? const Value.absent()
           : Value(pinnedMessageId),
-      createdAt: Value(createdAt),
+      createdAt: createdAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(updatedAt),
@@ -835,7 +840,7 @@ class Chat extends DataClass implements Insertable<Chat> {
       name: serializer.fromJson<String?>(json['name']),
       type: serializer.fromJson<String>(json['type']),
       pinnedMessageId: serializer.fromJson<int?>(json['pinnedMessageId']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      createdAt: serializer.fromJson<DateTime?>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
   }
@@ -847,7 +852,7 @@ class Chat extends DataClass implements Insertable<Chat> {
       'name': serializer.toJson<String?>(name),
       'type': serializer.toJson<String>(type),
       'pinnedMessageId': serializer.toJson<int?>(pinnedMessageId),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'createdAt': serializer.toJson<DateTime?>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
   }
@@ -857,7 +862,7 @@ class Chat extends DataClass implements Insertable<Chat> {
     Value<String?> name = const Value.absent(),
     String? type,
     Value<int?> pinnedMessageId = const Value.absent(),
-    DateTime? createdAt,
+    Value<DateTime?> createdAt = const Value.absent(),
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => Chat(
     id: id ?? this.id,
@@ -866,7 +871,7 @@ class Chat extends DataClass implements Insertable<Chat> {
     pinnedMessageId: pinnedMessageId.present
         ? pinnedMessageId.value
         : this.pinnedMessageId,
-    createdAt: createdAt ?? this.createdAt,
+    createdAt: createdAt.present ? createdAt.value : this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
   Chat copyWithCompanion(ChatsCompanion data) {
@@ -915,7 +920,7 @@ class ChatsCompanion extends UpdateCompanion<Chat> {
   final Value<String?> name;
   final Value<String> type;
   final Value<int?> pinnedMessageId;
-  final Value<DateTime> createdAt;
+  final Value<DateTime?> createdAt;
   final Value<DateTime?> updatedAt;
   const ChatsCompanion({
     this.id = const Value.absent(),
@@ -956,7 +961,7 @@ class ChatsCompanion extends UpdateCompanion<Chat> {
     Value<String?>? name,
     Value<String>? type,
     Value<int?>? pinnedMessageId,
-    Value<DateTime>? createdAt,
+    Value<DateTime?>? createdAt,
     Value<DateTime?>? updatedAt,
   }) {
     return ChatsCompanion(
@@ -1039,7 +1044,8 @@ class $ChatMembersTable extends ChatMembers
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK(role IN ("owner","admin","member"))',
+    $customConstraints:
+        'NOT NULL CHECK(role IN (\'owner\',\'admin\',\'member\'))',
   );
   static const VerificationMeta _joinedAtMeta = const VerificationMeta(
     'joinedAt',
@@ -1539,7 +1545,7 @@ class $MessagesTable extends Messages with TableInfo<$MessagesTable, Message> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     $customConstraints:
-        'NOT NULL CHECK(type IN ("text","photo","video","voice","document","sticker","service"))',
+        'NOT NULL CHECK(type IN (\'text\',\'photo\',\'video\',\'voice\',\'document\',\'sticker\',\'service\'))',
   );
   static const VerificationMeta _contentMeta = const VerificationMeta(
     'content',
@@ -2569,7 +2575,7 @@ class $MessageStatesTable extends MessageStates
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     $customConstraints:
-        'NOT NULL CHECK(status IN ("sent", "read", "delivered"))',
+        'NOT NULL CHECK(status IN (\'sent\', \'read\', \'delivered\'))',
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
@@ -3159,7 +3165,7 @@ typedef $$ChatsTableCreateCompanionBuilder =
       Value<String?> name,
       required String type,
       Value<int?> pinnedMessageId,
-      Value<DateTime> createdAt,
+      Value<DateTime?> createdAt,
       Value<DateTime?> updatedAt,
     });
 typedef $$ChatsTableUpdateCompanionBuilder =
@@ -3168,7 +3174,7 @@ typedef $$ChatsTableUpdateCompanionBuilder =
       Value<String?> name,
       Value<String> type,
       Value<int?> pinnedMessageId,
-      Value<DateTime> createdAt,
+      Value<DateTime?> createdAt,
       Value<DateTime?> updatedAt,
     });
 
@@ -3312,7 +3318,7 @@ class $$ChatsTableTableManager
                 Value<String?> name = const Value.absent(),
                 Value<String> type = const Value.absent(),
                 Value<int?> pinnedMessageId = const Value.absent(),
-                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
               }) => ChatsCompanion(
                 id: id,
@@ -3328,7 +3334,7 @@ class $$ChatsTableTableManager
                 Value<String?> name = const Value.absent(),
                 required String type,
                 Value<int?> pinnedMessageId = const Value.absent(),
-                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
               }) => ChatsCompanion.insert(
                 id: id,

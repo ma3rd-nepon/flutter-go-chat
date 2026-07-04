@@ -33,6 +33,5 @@ dev_dependencies:
 flutter:
   assets:
   - assets/images/rabbit.png
-  - assets/db/first.db
   
   uses-material-design: true
