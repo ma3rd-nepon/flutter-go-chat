@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_go_chat/theme/app_theme.dart';
+import 'package:flutter_go_chat/theme/theme_controller.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -9,6 +10,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  bool isOrange = true;
+
   @override
   void initState() {
     super.initState();
@@ -21,6 +24,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text("Hello Profile")));
+    return Scaffold(
+      body: Center(
+        child: Column(
+          children: [
+            Text("Change Theme"),
+            ElevatedButton(
+              onPressed: () async {
+                await ThemeController.instance.setTheme(Themes.light, AccentColor.lightBlue);
+              },
+              child: Text("PUSH MEE"),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

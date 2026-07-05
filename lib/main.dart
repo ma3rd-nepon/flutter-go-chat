@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:flutter_go_chat/theme/app_theme.dart';
+import 'package:flutter_go_chat/theme/theme_controller.dart';
 import 'package:flutter_go_chat/app.dart';
 import 'package:flutter_go_chat/services/db_service.dart';
 
@@ -8,14 +9,17 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
   DatabaseService().openDB("database.db");
-  await AppColors.init("assets/themes/theme_orange.json");
+  
+  final currentTheme = Themes.light;
+  final currentAccent = AccentColor.lightBlue;
+  await AppColors.init(currentTheme, currentAccent);
 
   const options = WindowOptions(
     size: Size(1024, 768),
     minimumSize: Size(600, 400),
     center: true,
-    titleBarStyle: TitleBarStyle.hidden,    // ← скрыть стандартный заголовок
-    windowButtonVisibility: false,           // ← скрыть кнопки Windows
+    titleBarStyle: TitleBarStyle.hidden, // ← скрыть стандартный заголовок
+    windowButtonVisibility: false, // ← скрыть кнопки Windows
   );
 
   windowManager.waitUntilReadyToShow(options, () async {
@@ -33,8 +37,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'supernova',
-      theme: ThemeList.orange.theme,
+      title: 'supernova*',
+      theme: ThemeController.instance.getTheme(),
       home: AppShell(),
     );
   }

@@ -37,9 +37,9 @@ class MessageBubble extends StatelessWidget {
               crossAxisAlignment: .start,
               mainAxisAlignment: .start,
               children: [
-                isMe ? SizedBox.shrink() : Text("user ID: ${message.senderId}", style: TextStyle(fontSize: 10)), // emir sdelay norm db
+                isMe ? SizedBox.shrink() : Text("user ID: ${message.senderId}", style: TextStyle(fontSize: 11)), // emir sdelay norm db
                 isMe ? SizedBox.shrink() : SizedBox(height: 3),
-                Text(text),
+                Text(text, style: TextStyle(fontSize: 15)),
               ],
             ),
           ),

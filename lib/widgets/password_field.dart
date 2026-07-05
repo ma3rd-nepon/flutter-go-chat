@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-
+import 'package:flutter_go_chat/icons_manager/app_icons.dart';
 class PasswordField extends StatefulWidget {
   const PasswordField({super.key});
   @override
@@ -16,7 +16,7 @@ class _PasswordFieldState extends State<PasswordField> {
       decoration: InputDecoration(
         hintText: 'Enter password',
         suffixIcon: IconButton(
-          icon: Icon(_obscured ? Icons.visibility_off : Icons.visibility),
+          icon: Icon(_obscured ? AppIcon.eyeOff.icon : AppIcon.eyeOn.icon),
           onPressed: () => setState(() => _obscured = !_obscured),
         ),
       ),

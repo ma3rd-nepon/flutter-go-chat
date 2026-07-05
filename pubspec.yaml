@@ -19,9 +19,7 @@ dependencies:
   window_manager: ^0.5.1
   google_fonts: ^8.1.0
   drift: ^2.34.0
-  sqlite3_flutter_libs: ^0.6.0+eol
-  sqlite3: ^3.3.4
-  cupertino_icons: ^1.0.8
+  icons_flutter: ^0.0.6
 
 dev_dependencies:
   flutter_test:
@@ -33,6 +31,9 @@ dev_dependencies:
 flutter:
   assets:
   - assets/images/rabbit.png
-  - assets/themes/theme_orange.json
+  - assets/themes/base/base_light.json
+  - assets/themes/base/base_dark.json
+  - assets/themes/accent/accent_orange.json
+  - assets/themes/accent/accent_lightblue.json
   
   uses-material-design: true

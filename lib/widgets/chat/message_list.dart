@@ -22,7 +22,7 @@ class MessageList extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      color: AppColors.background,
+      color: AppColors.chatBackground,
       child: StreamBuilder<List<Message>>(
         stream: messagesStream,
         builder: (_, snapshot) {

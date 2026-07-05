@@ -16,7 +16,7 @@ class WindowsButton extends StatelessWidget {
         width: 46,
         height: 32,
         color: AppColors.surfaceTransparent,
-        child: Icon(icon, size: 32, color: AppColors.surfaceIcon),
+        child: Icon(icon, size: 32, color: AppColors.iconPrimary),
       ),
     );
   }

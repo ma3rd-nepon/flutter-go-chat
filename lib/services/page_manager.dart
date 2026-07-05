@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_go_chat/icons_manager/app_icons.dart';
 
 class PageEntry {
   final PageId id;
@@ -13,14 +14,14 @@ class PageEntry {
 }
 
 enum PageId {
-  frame('supernova*', Icons.egg),
-  chat('Сообщения', Icons.chat_bubble),
-  login('Регистрация', Icons.explore),
-  calls('Звонки', Icons.phone),
-  music('Музыка', Icons.headphones),
-  settings('Настройки', Icons.settings),
-  profile('Профиль', Icons.account_circle),
-  unknown('Ошибка', Icons.question_mark);
+  frame('supernova*', AppIcon.logo.icon),
+  chat('Сообщения', AppIcon.chatBubble.icon),
+  login('Регистрация', AppIcon.login.icon),
+  calls('Звонки', AppIcon.calls.icon),
+  music('Музыка', AppIcon.music.icon),
+  settings('Настройки', AppIcon.settings.icon),
+  profile('Профиль', AppIcon.profile.icon),
+  unknown('Ошибка', AppIcon.unknown.icon);
 
   const PageId(this.label, this.icon);
   final String label;

@@ -46,13 +46,13 @@ class AppRailBar extends StatelessWidget {
 
     if (navManager.pages.isEmpty) return const SizedBox.shrink();
     return SizedBox(
-      width: 300,
+      width: 250,
       child: NavigationRail(
         extended: true,
         minExtendedWidth: 250,
         selectedIndex: _currentNavIndex(navManager.pages),
         onDestinationSelected: (index) => navManager.openPage(navManager.pages[index]),
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.sideBarBackground,
         destinations: navManager.pages.map(_buildItem).toList(),
       ),
     );

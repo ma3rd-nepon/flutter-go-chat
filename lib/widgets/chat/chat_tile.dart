@@ -6,12 +6,16 @@ class ChatTile extends StatefulWidget {
   final Chat chat;
   final Message? lastMsg;
   final VoidCallback onTap;
+  final int width;
+  final int height;
 
   const ChatTile({
     super.key,
     required this.lastMsg,
     required this.chat,
     required this.onTap,
+    required this.width,
+    required this.height
   });
 
   @override
@@ -38,15 +42,16 @@ class _ChatTileState extends State<ChatTile> {
         child: GestureDetector(
           onTap: widget.onTap,
           child: Container(
-            height: 200,
+            height: widget.height.toDouble(),
+            width: widget.width.toDouble(),
             padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               color: inherited.currentChatId == widget.chat.id
-                  ? AppColors.primaryVariant
+                  ? AppColors.surfaceSelected
                   : _hover
-                  ? AppColors.chatListBackground
-                  : AppColors.surface,
+                  ? AppColors.surfaceHover
+                  : AppColors.surfaceVariant,
             ),
             child: Column(
               mainAxisAlignment: .center,
@@ -71,7 +76,7 @@ class _ChatTileState extends State<ChatTile> {
                           const SizedBox(height: 5),
                           Text(widget.chat.name ?? "NAME ERROR"),
                           const SizedBox(height: 10),
-                          widget.chat.type == "private" ? Text("был(а) недавно") : SizedBox(height: 20), // websocket poll
+                          widget.chat.type == "private" ? Text("был(а) недавно") : SizedBox(height: 14), // websocket poll
                           // widget.chatStatus ? "онлайн" : "был(а) недавно",
                         ],
                       ),
@@ -115,7 +120,7 @@ class _ChatTileState extends State<ChatTile> {
                       isMe
                           ? SizedBox.shrink()
                           : CircleAvatar(
-                              backgroundColor: AppColors.myMessageBubble,
+                              backgroundColor: AppColors.badge,
                               radius: 12,
                               child: Text(
                                 "${widget.lastMsg?.content?.split(' ').length}",
