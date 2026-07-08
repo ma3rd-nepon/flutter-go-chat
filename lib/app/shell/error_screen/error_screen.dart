@@ -1,0 +1,49 @@
+import 'package:flutter/material.dart';
+
+import 'package:flutter_go_chat/core/services/global_screen_manager.dart';
+
+class ErrorScreen extends StatefulWidget {
+  const ErrorScreen({super.key});
+
+  @override
+  State<ErrorScreen> createState() => _ErrorScreenState();
+}
+
+class _ErrorScreenState extends State<ErrorScreen> {
+  @override
+  Widget build(BuildContext context) {
+    final g = GlobalScreenManager.of(context);
+
+    final error = ModalRoute.of(context)!.settings.arguments as String;
+    final child = Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: .center,
+            crossAxisAlignment: .center,
+            children: [
+              Text("Произошла непредвиденная ошибка: \n $error"),
+              const SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: () => g.redirect(context, "/main_ui", null),
+                child: Text("На гл экран"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    return g.isDesktop(context)
+        ? child
+        : PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (didPop, result) {
+              if (didPop) return;
+              GlobalScreenManager.of(context).goBack(context);
+            },
+
+            child: child,
+          );
+  }
+}

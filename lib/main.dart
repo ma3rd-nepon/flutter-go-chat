@@ -1,45 +1,21 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:flutter_go_chat/theme/app_theme.dart';
-import 'package:flutter_go_chat/theme/theme_controller.dart';
-import 'package:flutter_go_chat/app.dart';
-import 'package:flutter_go_chat/services/db_service.dart';
+import 'package:flutter_go_chat/app/app_new.dart';
+import 'package:flutter_go_chat/core/services/database/db_service.dart';
+import 'package:flutter_go_chat/app/theme/theme_controller.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await windowManager.ensureInitialized();
-  DatabaseService().openDB("database.db");
+
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) await windowManager.ensureInitialized();
   
-  final currentTheme = Themes.light;
-  final currentAccent = AccentColor.lightBlue;
-  await AppColors.init(currentTheme, currentAccent);
+  DatabaseService().openDB("database.db");
+  await ThemeController.instance.init();
 
-  const options = WindowOptions(
-    size: Size(1024, 768),
-    minimumSize: Size(600, 400),
-    center: true,
-    titleBarStyle: TitleBarStyle.hidden, // ← скрыть стандартный заголовок
-    windowButtonVisibility: false, // ← скрыть кнопки Windows
-  );
+    // if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) 
 
-  windowManager.waitUntilReadyToShow(options, () async {
-    await windowManager.show();
-    await windowManager.focus();
-  });
-
-  runApp(MyApp(windowManager: windowManager));
-}
-
-class MyApp extends StatelessWidget {
-  final WindowManager windowManager;
-  const MyApp({super.key, required this.windowManager});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'supernova*',
-      theme: ThemeController.instance.getTheme(),
-      home: AppShell(),
-    );
-  }
+  runApp(AppShell());
 }

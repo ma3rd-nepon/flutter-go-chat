@@ -19,7 +19,7 @@ dependencies:
   window_manager: ^0.5.1
   google_fonts: ^8.1.0
   drift: ^2.34.0
-  icons_flutter: ^0.0.6
+  lucide_icons_flutter: ^3.1.14+2
 
 dev_dependencies:
   flutter_test:
@@ -31,9 +31,9 @@ dev_dependencies:
 flutter:
   assets:
   - assets/images/rabbit.png
-  - assets/themes/base/base_light.json
-  - assets/themes/base/base_dark.json
-  - assets/themes/accent/accent_orange.json
-  - assets/themes/accent/accent_lightblue.json
+  - assets/themes/base/light.json
+  - assets/themes/base/dark.json
+  - assets/themes/accent/orange.json
+  - assets/themes/accent/blue.json
   
   uses-material-design: true
