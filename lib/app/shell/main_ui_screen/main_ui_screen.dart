@@ -8,6 +8,7 @@ import 'package:flutter_go_chat/features/calls/calls_page.dart';
 import 'package:flutter_go_chat/features/profile/profile_page.dart';
 import 'package:flutter_go_chat/features/chats/chats_page.dart';
 import 'package:flutter_go_chat/features/settings/settings_page.dart';
+import 'package:flutter_go_chat/app/theme/theme_extension.dart';
 
 class MainUIScreen extends StatefulWidget {
   final PageManager navManager;
@@ -43,22 +44,13 @@ class _MainUIScreenState extends State<MainUIScreen> {
 
   void _initPages() {
     List<PageEntry> defaultPages = [
-      PageEntry(
-        id: PageId.profile,
-        page: ProfileScreen(),
-        canBeClosed: false,
-      ),
+      PageEntry(id: PageId.profile, page: ProfileScreen(), canBeClosed: false),
       PageEntry(
         id: PageId.chat,
-        page: ChatsPage(
-          currentUserId: widget.currentUserId),
+        page: ChatsPage(currentUserId: widget.currentUserId),
         canBeClosed: false,
       ),
-      PageEntry(
-        id: PageId.calls,
-        page: CallsScreen(),
-        canBeClosed: false,
-      ),
+      PageEntry(id: PageId.calls, page: CallsScreen(), canBeClosed: false),
       PageEntry(
         id: PageId.settings,
         page: SettingsScreen(),
@@ -74,58 +66,66 @@ class _MainUIScreenState extends State<MainUIScreen> {
   @override
   Widget build(BuildContext context) {
     final g = GlobalScreenManager.of(context);
+    final colors = Theme.of(context).extension<AppThemeExtension>()!.colors;
+
 
     return LayoutBuilder(
       builder: (cntxt, constraints) {
-        final pagesWidget = Expanded(
-          child: IndexedStack(
-            index: widget.navManager.currentIndex,
-            children: widget.navManager.pages.map((e) => e.page).toList(),
-          ),
+        final pagesWidget = IndexedStack(
+          index: widget.navManager.currentIndex,
+          children: widget.navManager.pages.map((e) => e.page).toList(),
         );
-        final childs = g.isDesktop(context)
-            ? [
+        return Scaffold(
+          body: SafeArea(
+            child: Column(
+              children: [
                 const MyAppBar(),
                 Expanded(
-                  child: Row(
+                  child: Stack(
                     children: [
-                      Align(
-                        alignment: .topStart,
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxHeight: constraints.maxHeight * 0.5,
-                            maxWidth: constraints.maxWidth * 0.25,
-                          ),
-                          child: AppRailBar(
-                            navManager: widget.navManager,
-                            constraints: constraints,
-                          ),
-                        ),
+                      // Wallpaper layer
+                      Positioned.fill(
+                        left: 0,
+                        top: 0,
+                        child:
+                            g.wallpaperUrl != null ? Image.network(g.wallpaperUrl!, fit: BoxFit.fill) : Container(color: colors.background), // Image.asset(wallpaper)
                       ),
-                      pagesWidget,
+
+                      AnimatedPadding(
+                        duration: Duration(
+                          milliseconds: 270,
+                        ), // модификатор анимаций
+                        padding: EdgeInsets.only(
+                          left: g.isDesktop(context) && !g.barHidden ? 250 : 0,
+                        ),
+                        child: pagesWidget,
+                      ),
+
+                      // Widgets Layer
+                      Align(
+                        alignment: g.isDesktop(context)
+                            ? .topStart
+                            : .bottomCenter,
+                        child: g.isDesktop(context)
+                            ? AppRailBar(
+                                navManager: widget.navManager,
+                                constraints: constraints,
+                              )
+                            : AppBottomBar(
+                                navManager: widget.navManager,
+                                constraints: constraints,
+                              ),
+                      ),
+
+                      // Align(
+                      //   alignment: g.isDesktop(context) ? .topEnd : .topCenter,
+                      //   child: pagesWidget
+                      // )
                     ],
                   ),
                 ),
-              ]
-            : [
-                pagesWidget,
-                Align(
-                  alignment: .bottomCenter,
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxHeight: constraints.maxHeight * 0.25,
-                      maxWidth: constraints.maxWidth * 0.72,
-                    ),
-                    child: AppBottomBar(
-                      navManager: widget.navManager,
-                      constraints: constraints,
-                    ),
-                  ),
-                ),
-              ];
-        return Scaffold(
-          body: SafeArea(
-            child: Center(child: Column(children: childs)),
+              ],
+            ),
           ),
         );
       },

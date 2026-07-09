@@ -19,13 +19,19 @@ class AppShell extends StatefulWidget {
   State<AppShell> createState() => _AppShellState();
 }
 
+
+/*
+пофиксить закрытие чата и смену влкадок при смене юи (а хотя нахуя?)
+*/
 class _AppShellState extends State<AppShell> with WindowListener {
   // bool _isPortrait = true;
   bool _isMaximized = false;
   bool _isLoggedIn = false;
+  bool barHidden = false;
   final uiManager = PageManager();
   int? currentUserId;
   String? errorText;
+  String? wallpaperUrl;
 
   @override
   void initState() {
@@ -53,6 +59,15 @@ class _AppShellState extends State<AppShell> with WindowListener {
     _isLoggedIn = true;
     currentUserId = newUserId;
     setState(() {});
+  }
+
+  void barToggle() {
+    setState(() => barHidden = !barHidden);
+  }
+
+  void changeWallpaper(String? url) {
+    if (url == "") url = null;
+    setState(() => wallpaperUrl = url);
   }
 
   @override
@@ -106,6 +121,10 @@ class _AppShellState extends State<AppShell> with WindowListener {
                     loginSuccess: loginSuccess,
                     uiManager: uiManager,
                     currentUserId: currentUserId,
+                    barToggle: barToggle,
+                    barHidden: barHidden,
+                    wallpaperUrl: wallpaperUrl,
+                    changeWallpaper: changeWallpaper,
                     child: child!,
                   ),
                 ),

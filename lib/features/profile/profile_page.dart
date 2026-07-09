@@ -26,6 +26,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final g = GlobalScreenManager.of(context);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Center(
           child: Text("Hello ${g.isDesktop(context) ? "Desktop" : "Mobile"} user!")

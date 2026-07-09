@@ -7,6 +7,10 @@ class GlobalScreenManager extends InheritedWidget {
   final Function(int) loginSuccess;
   final PageManager uiManager;
   final int? currentUserId;
+  final VoidCallback barToggle;
+  final bool barHidden;
+  final String? wallpaperUrl;
+  final Function(String?) changeWallpaper;
 
   const GlobalScreenManager({
     super.key, 
@@ -15,6 +19,10 @@ class GlobalScreenManager extends InheritedWidget {
     required this.loginSuccess,
     required this.uiManager,
     required this.currentUserId,
+    required this.barToggle,
+    required this.barHidden,
+    required this.wallpaperUrl,
+    required this.changeWallpaper
   });
 
   void redirect(BuildContext context, String url, Object? args) async {
