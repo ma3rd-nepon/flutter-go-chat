@@ -130,17 +130,17 @@ supernova/
 ---
 
 ##API ENDPOINTS
-POST - /api/register - Регистрация нового пользователя
-POST - /api/login - Вход в систему
+- POST - /api/register - Регистрация нового пользователя
+- POST - /api/login - Вход в систему
 
 
 Пример запроса (register):
 
-{
-  "username": "testuser",
-  "password": "123456",
-  "phone": "+79991234567"
-}
+- {
+  - "username": "testuser",
+  - "password": "123456",
+  - "phone": "+79991234567"
+- }
 
 Пример ответа: 
 
