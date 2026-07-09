@@ -82,44 +82,50 @@
 
 supernova/
 ├── cmd/
-│ └── server/
-│ ── main.go
-├── internal/
-│ ├── config/
-│ │ └── config.go 
-│ ├── database/
-│ │ └── database.go 
-│ ├── handlers/
-│ │ ├── auth.go 
-│ │ ├── chats.go 
-│ │ ├── chats_create.go 
-│ │ ├── chat_members.go 
-│ │ ├── chat_pin.go 
-│ │ ├── chat_rename.go 
-│ │ ├── chat_search.go
-│ │ ├── chat_settings.go 
-│ │ ├── chat_sync.go 
-│ │ ├── messages.go 
-│ │ ├── message_actions.go 
-│ │ ├── user_blocks.go 
-│ │ ├── user_status.go 
-│ │ ├── upload.go 
-│ │ └── websocket.go #
-│ ├── hub/
-│ │ ├── hub.go 
-│ │ └── client.go
-│ ├── middleware/
-│ │ └── auth.go 
-│ └── models/
-│ └── models.go 
-├── uploads/ 
-├── test_api.html 
-├── .env 
-├── .env.example 
-├── .gitignore
-├── go.mod
+ |           └── server/
+ |                          └──  main.go  
+ |                              
+├── internal/  
+ |               └──  config/      
+ |                |              └── config.go
+ |                | 
+ |               └──  database/
+ |                |                 └── db.go
+ |                | 
+ |               ├── handlers/
+ |                |               ├──auth.go
+ |                |               ├── chat_members.go         
+ |                |               ├── chat_pin.go             
+ |                |               ├── chat_rename.go    
+ |                |               ├── chat_search.go
+ |                |               ├── chat_settings.go        
+ |                |               ├── chat_sync.go             
+ |                |               ├── chats.go
+ |                |               ├── chats_create.go
+ |                |               ├── message_action.go       
+ |                |               ├── message_response.go            
+ |                |               ├── messages.go
+ |                |               ├── upload.go
+ |                |               ├── user_blocks.go
+ |                |               ├── user_status.go
+ |                |               ├── users.go
+ |                |               └── websocket.go
+ |               ├── hub/
+ |                |          └── hub.go
+ |                |
+ |               ├── middleware/
+ |                |                     └── auth.go
+ |                |
+ |               └── models/
+ |                                └── models.go
+├── uploads/    
+ |                └── картинки и все что грузят юзеры.png  
+ |
+├── тестовый хтмл.html              
+├── go.mod        
 ├── go.sum
-└── README.md
+├── messenger.db
+└── .env
 
 ---
 
