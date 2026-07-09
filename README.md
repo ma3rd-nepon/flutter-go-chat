@@ -4,11 +4,15 @@
 
 ##Возможности
 
+---
+
 ###Пользователи
 - Регистрация и авторизация (JWT токены)
 - Профили с аватарками, био и статусами
 - Поиск пользователей по username
 - Блокировка пользователей
+
+---
 
 ###Чаты
 - Личные сообщения 
@@ -19,6 +23,8 @@
 - Выход из чата
 - Переименование чатов
 - Передача прав владельца
+
+---
 
 ###Сообщения
 - Текстовые сообщения
@@ -31,6 +37,8 @@
 - Поиск по сообщениям (серверный)
 - Статусы доставки и прочтения (✓, ✓✓, синие ✓✓)
 
+---
+
 ###Уведомления и статусы
 - Индикатор "печатает..."
 - Статусы онлайн/оффлайн в реальном времени
@@ -38,12 +46,16 @@
 - Мьют чата (отключение уведомлений)
 - Счетчики непрочитанных сообщений
 
+---
+
 ###Голосовые каналы (WebRTC) (не реализовано ибо фронтед отстает)
 - Вход/выход из голосового канала
 - Обмен SDP offer/answer
 - Обмен ICE candidates
 - Mute/unmute микрофона
 - Индикация кто говорит
+
+---
 
 ###Real-time 
 - Мгновенная доставка сообщений
@@ -70,52 +82,46 @@
 
 supernova/
 ├── cmd/
-|     └── server/
-|            └── main.go  
-|                              
-├── internal/  
-|        └──  config/      
-|        |       └── config.go
-|        | 
-|        └──  database/
-|        |         └── db.go
-|        | 
-|        ├── handlers/
-|        |        ├──auth.go
-|        |        ├── chat_members.go         
-|        |        ├── chat_pin.go             
-|        |        ├── chat_rename.go    
-|        |        ├── chat_search.go
-|        |        ├── chat_settings.go        
-|        |        ├── chat_sync.go             
-|        |        ├── chats.go
-|        |        ├── chats_create.go
-|        |        ├── message_action.go       
-|        |        ├── message_response.go            
-|        |        ├── messages.go
-|        |        ├── upload.go
-|        |        ├── user_blocks.go
-|        |        ├── user_status.go
-|        |        ├── users.go
-|        |        └── websocket.go
-|        ├── hub/
-|        |    └── hub.go
-|        |
-|        ├── middleware/
-|        |         └── auth.go
-|        |
-|        └── models/
-|               └── models.go
-├── uploads/    
-|       └── картинки и все что грузят юзеры.png  
-|
-├── тестовый хтмл.html              
-├── go.mod        
+│ └── server/
+│ ── main.go
+├── internal/
+│ ├── config/
+│ │ └── config.go 
+│ ├── database/
+│ │ └── database.go 
+│ ├── handlers/
+│ │ ├── auth.go 
+│ │ ├── chats.go 
+│ │ ├── chats_create.go 
+│ │ ├── chat_members.go 
+│ │ ├── chat_pin.go 
+│ │ ├── chat_rename.go 
+│ │ ├── chat_search.go
+│ │ ├── chat_settings.go 
+│ │ ├── chat_sync.go 
+│ │ ├── messages.go 
+│ │ ├── message_actions.go 
+│ │ ├── user_blocks.go 
+│ │ ├── user_status.go 
+│ │ ├── upload.go 
+│ │ └── websocket.go #
+│ ├── hub/
+│ │ ├── hub.go 
+│ │ └── client.go
+│ ├── middleware/
+│ │ └── auth.go 
+│ └── models/
+│ └── models.go 
+├── uploads/ 
+├── test_api.html 
+├── .env 
+├── .env.example 
+├── .gitignore
+├── go.mod
 ├── go.sum
-├── messenger.db
-└── .env
+└── README.md
 
-
+---
 
 ##API ENDPOINTS
 POST - /api/register - Регистрация нового пользователя
@@ -141,6 +147,7 @@ POST - /api/login - Вход в систему
   }
 }
 
+---
 
 Пользователи:
 
@@ -161,6 +168,7 @@ DELETE /api/users/:user_id/block  Разблокировать пользова�
   "avatar_url": "https://example.com/avatar.jpg"
 }
 
+---
 
 Чаты:
 
@@ -198,6 +206,7 @@ GET /api/chats/:chat_id/pinned  Получить закреплённое соо
   "user_ids": []
 }
 
+---
 
 Сообщения: 
 POST /api/messages  Отправить сообщение
@@ -213,7 +222,6 @@ POST /api/messages/:message_id/forward  Переслать сообщение
   "type": "text",
   "reply_to": "uuid_сообщения"
 }
-
 
 
 Пример ответа: 
@@ -238,6 +246,7 @@ POST /api/messages/:message_id/forward  Переслать сообщение
 }
 
 
+---
 
 Загрузка файлов:
 POST /api/upload  Загрузить файл
@@ -251,11 +260,12 @@ file: [binary]
   "file_url": "/uploads/uuid.jpg"
 }
 
+---
 
 WebSocket Подключение:
 GET /api/ws?token=JWT_TOKEN
 
-
+---
 
 События от клиента:
 subscribe { chat_id: "uuid" }  Подписка на чат
@@ -268,7 +278,7 @@ voice_sdp { target_user_id, sdp, type }  Обмен SDP
 voice_ice { target_user_id, candidate }  Обмен ICE
 voice_mute { is_muted }  Mute/unmute
 
-
+---
 
 События от сервера:
 new_message Новое сообщение
@@ -291,7 +301,7 @@ voice_sdp SDP offer/answer
 voice_ice ICE candidate
 voice_user_muted Пользователь замьючен
 
-
+---
 
 ##База данных(таблицы)
 users — пользователи
@@ -303,7 +313,7 @@ blocks — блокировки пользователей
 voice_channels — голосовые каналы
 voice_participants — участники голосовых каналов
 
-
+---
 
 ##.env
 APP_PORT Порт сервера  8080
