@@ -134,7 +134,8 @@ POST - /api/register - Регистрация нового пользовате�
 POST - /api/login - Вход в систему
 
 
-Пример запроса (register):|
+Пример запроса (register):
+
 {
   "username": "testuser",
   "password": "123456",
@@ -142,6 +143,7 @@ POST - /api/login - Вход в систему
 }
 
 Пример ответа: 
+
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "user": {
@@ -168,6 +170,7 @@ DELETE /api/users/:user_id/block  Разблокировать пользова�
 
 
 Пример обновления профиля: 
+
 {
   "display_name": "Иван Иванов",
   "bio": "Привет, я использую Supernova!",
@@ -200,12 +203,14 @@ GET /api/chats/:chat_id/pinned  Получить закреплённое соо
 
 
 Пример создания личного чата: 
+
 {
   "username": "bananchik"
 }
 
 
 Пример создания группы:
+
 {
   "name": "Моя группа",
   "type": "group",
@@ -215,6 +220,7 @@ GET /api/chats/:chat_id/pinned  Получить закреплённое соо
 ---
 
 Сообщения: 
+
 POST /api/messages  Отправить сообщение
 PUT /api/messages/:message_id  Редактировать сообщение
 DELETE /api/messages/:message_id  Удалить сообщение
@@ -222,6 +228,7 @@ POST /api/messages/:message_id/forward  Переслать сообщение
 
 
 Пример отправки сообщения: 
+
 {
   "chat_id": "uuid",
   "text": "Привет!",
@@ -231,6 +238,7 @@ POST /api/messages/:message_id/forward  Переслать сообщение
 
 
 Пример ответа: 
+
 {
   "message": {
     "id": "uuid",
@@ -255,13 +263,16 @@ POST /api/messages/:message_id/forward  Переслать сообщение
 ---
 
 Загрузка файлов:
+
 POST /api/upload  Загрузить файл
 
 
 Пример загрузки:
+
 file: [binary]
 
 Пример ответа:
+
 {
   "file_url": "/uploads/uuid.jpg"
 }
@@ -269,11 +280,13 @@ file: [binary]
 ---
 
 WebSocket Подключение:
+
 GET /api/ws?token=JWT_TOKEN
 
 ---
 
 События от клиента:
+
 subscribe { chat_id: "uuid" }  Подписка на чат
 typing { chat_id, user_id, username }  Пользователь печатает
 stop_typing { chat_id, user_id }  Перестал печатать
@@ -287,6 +300,7 @@ voice_mute { is_muted }  Mute/unmute
 ---
 
 События от сервера:
+
 new_message Новое сообщение
 message_edited Сообщение отредактировано
 message_deleted Сообщение удалено
@@ -309,7 +323,8 @@ voice_user_muted Пользователь замьючен
 
 ---
 
-##База данных(таблицы)
+##База данных(таблицы):
+
 users — пользователи
 chats — чаты (личные и групповые)
 chat_members — участники чатов
@@ -322,6 +337,7 @@ voice_participants — участники голосовых каналов
 ---
 
 ##.env
+
 APP_PORT Порт сервера  8080
 DB_HOST Хост базы данных  localhost
 DB_PORT Порт PostgreSQL  5432
