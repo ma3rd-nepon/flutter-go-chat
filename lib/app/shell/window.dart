@@ -70,34 +70,35 @@ class _WindowControlsState extends State<WindowControls> {
 
     return GestureDetector(
       onPanStart: (_) => windowManager.startDragging(),
-      child: Container(
-        height: 30,
+      child: ColoredBox(
         color: colors.background,
-        child: Row(
-          mainAxisAlignment: .end,
-          crossAxisAlignment: .center,
-          children: [
-            IconButton(
-              icon: Icon(AppIcons.minimize),
-              onPressed: () async {
-                await windowManager.minimize();
-              },
-            ),
-            IconButton(
-              icon: Icon(AppIcons.maximize),
-              onPressed: () async {
-                widget.maximize();
-              },
-            ),
-            IconButton(
-              icon: Icon(AppIcons.close),
-              onPressed: () async {
-                await windowManager.close();
-              },
-            ),
-          ],
-        ),
+        child: SizedBox(
+          height: 30, 
+          child: Row(
+            mainAxisAlignment: .end,
+            crossAxisAlignment: .center,
+            children: [
+              IconButton(
+                icon: Icon(AppIcons.minimize),
+                onPressed: () async {
+                  await windowManager.minimize();
+                },
+              ),
+              IconButton(
+                icon: Icon(AppIcons.maximize),
+                onPressed: () async {
+                  widget.maximize();
+                },
+              ),
+              IconButton(
+                icon: Icon(AppIcons.close),
+                onPressed: () async {
+                  await windowManager.close();
+                },
+              ),
+            ],
+          ),
       ),
-    );
+    ));
   }
 }

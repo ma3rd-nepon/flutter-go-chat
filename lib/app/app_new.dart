@@ -11,6 +11,7 @@ import 'package:flutter_go_chat/app/shell/error_screen/error_screen.dart';
 import 'package:flutter_go_chat/app/shell/startup_screen/startup_screen.dart';
 import 'package:flutter_go_chat/app/shell/window.dart';
 import 'package:flutter_go_chat/app/shell/main_ui_screen/main_ui_screen.dart';
+import 'package:flutter_go_chat/core/layers/wallpaper/wallaper_type.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -28,10 +29,15 @@ class _AppShellState extends State<AppShell> with WindowListener {
   bool _isMaximized = false;
   bool _isLoggedIn = false;
   bool barHidden = false;
+
   final uiManager = PageManager();
   int? currentUserId;
+  
   String? errorText;
-  String? wallpaperUrl;
+  
+  WallpaperType wallpaperType = WallpaperType.gradient;
+  List<String> wallpaperContent = []; // [color, gradient, asset, url]
+  String? particleEffectId;
 
   @override
   void initState() {
@@ -65,9 +71,17 @@ class _AppShellState extends State<AppShell> with WindowListener {
     setState(() => barHidden = !barHidden);
   }
 
-  void changeWallpaper(String? url) {
-    if (url == "") url = null;
-    setState(() => wallpaperUrl = url);
+  void changeWallpaperType(WallpaperType type) {
+    setState(() => wallpaperType = type);
+  }
+
+  // void changeWallpaperContent(String content) {
+  //   final l = [WallpaperType.color, WallpaperType.gradient, WallpaperType.asset, WallpaperType.url];
+  //   setState(() => wallpaperContent[l.indexOf(wallpaperType)] = content);
+  // }
+
+  void changeParticleEffect(String id) {
+    setState(() => particleEffectId = id);
   }
 
   @override
@@ -123,8 +137,11 @@ class _AppShellState extends State<AppShell> with WindowListener {
                     currentUserId: currentUserId,
                     barToggle: barToggle,
                     barHidden: barHidden,
-                    wallpaperUrl: wallpaperUrl,
-                    changeWallpaper: changeWallpaper,
+                    wallpaperType: wallpaperType,
+                    changeWallpaperType: changeWallpaperType,
+                    // changeWallpaperContent: changeWallpaperContent,
+                    changeParticleEffect: changeParticleEffect,
+                    particleEffectId: particleEffectId,
                     child: child!,
                   ),
                 ),
@@ -158,7 +175,7 @@ class _AppShellState extends State<AppShell> with WindowListener {
         //           ),
         //         },
         //         builder: (context, child) {
-        //           return Column(
+        //           return Column( 
         //             children: [
         //               isDesktop
         //                   ? WindowControls(maximize: toggleMaximize)

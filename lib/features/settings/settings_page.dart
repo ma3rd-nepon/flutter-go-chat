@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_go_chat/app/theme/theme_controller.dart';
 import 'package:flutter_go_chat/core/services/global_screen_manager.dart';
-import 'package:flutter_go_chat/core/icons/app_icons.dart';
 
 class SettingsScreen extends StatelessWidget {
-  SettingsScreen({super.key});
-  final wallpController = TextEditingController();
+  const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -70,13 +68,26 @@ class SettingsScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              Row(children: [
-                Expanded(child: TextField(decoration: InputDecoration(hintText: "set wallpaper URL"), controller: wallpController)),
-                IconButton(
-                  icon: Icon(AppIcons.easterEgg),
-                  onPressed: () { g.changeWallpaper(wallpController.text.trim()); wallpController.clear(); },
-                )
-              ])
+              // Row(children: [
+              //   Expanded(child: TextField(decoration: InputDecoration(hintText: "set wallpaper URL"), controller: wallpController)),
+              //   IconButton(
+              //     icon: Icon(AppIcons.easterEgg),
+              //     onPressed: () { g.changeWallpaperType(wallpController.text.trim()); wallpController.clear(); },
+              //   )
+              // ]),
+              DropdownMenu<String>(
+                label: Text("Particle Effect"),
+                dropdownMenuEntries: [
+                  DropdownMenuEntry(value: "network", label: "Network"),
+                  DropdownMenuEntry(value: "snow", label: "Snow"),
+                  DropdownMenuEntry(value: "rain", label: "Rain"),
+                  DropdownMenuEntry(value: "dust", label: "Dust"),
+                  DropdownMenuEntry(value: "starrain", label: "Star Rain"),
+                ],
+                onSelected: (value) {
+                  g.changeParticleEffect(value!);
+                },
+              )
             ],
           ),
         ),

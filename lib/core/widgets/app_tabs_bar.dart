@@ -3,6 +3,7 @@ import 'package:flutter_go_chat/core/services/page_manager.dart';
 import 'package:flutter_go_chat/app/theme/theme_extension.dart';
 import 'package:flutter_go_chat/core/icons/app_icons.dart';
 import 'package:flutter_go_chat/core/services/global_screen_manager.dart';
+import 'package:flutter_go_chat/core/widgets/buttons.dart';
 
 class AppBottomBar extends StatefulWidget {
   final PageManager navManager;
@@ -51,13 +52,13 @@ class _AppBottomBarState extends State<AppBottomBar> {
           alignment: .topStart,
           child: Column(
             children: [
-              Align(
-                alignment: .centerStart,
-                child: ButtonTheme(
-                  height: 8,
-                  child: ElevatedButton(
+              Padding(
+                padding: EdgeInsets.only(left: 8),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: NavBarToggler(
                     onPressed: () => g.barToggle(),
-                    child: Icon(AppIcons.easterEgg),
+                    isActive: !g.barHidden,
                   ),
                 ),
               ),
@@ -120,7 +121,7 @@ class AppRailBar extends StatelessWidget {
 
     return AnimatedSlide(
       duration: const Duration(milliseconds: 250),
-      offset: g.barHidden ? Offset(-0.8, 0) : Offset.zero,
+      offset: g.barHidden ? Offset(-0.85, 0) : Offset.zero,
       child: Padding(
         padding: EdgeInsets.only(top: 20, left: 20),
         child: Container(
@@ -144,16 +145,15 @@ class AppRailBar extends StatelessWidget {
                 backgroundColor: colors.sidebarBackground,
                 destinations: navManager.pages.map(_buildItem).toList(),
               ),
-              Align(
-                alignment: .topStart,
-                child: ButtonTheme(
-                  height: 5,
-                  minWidth: 5,
+              Padding(
+                padding: EdgeInsets.only(left: 6),
+                child: Align(
+                  alignment: Alignment.topLeft,
                   child: RotatedBox(
                     quarterTurns: 1,
-                    child: ElevatedButton(
+                    child: NavBarToggler(
                       onPressed: () => g.barToggle(),
-                      child: Icon(AppIcons.easterEgg),
+                      isActive: !g.barHidden,
                     ),
                   ),
                 ),

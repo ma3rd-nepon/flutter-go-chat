@@ -4,11 +4,15 @@ import 'package:flutter_go_chat/core/services/global_screen_manager.dart';
 import 'package:flutter_go_chat/core/services/page_manager.dart';
 import 'package:flutter_go_chat/core/widgets/app_tabs_bar.dart';
 import 'package:flutter_go_chat/app/shell/window.dart';
+
 import 'package:flutter_go_chat/features/calls/calls_page.dart';
 import 'package:flutter_go_chat/features/profile/profile_page.dart';
 import 'package:flutter_go_chat/features/chats/chats_page.dart';
 import 'package:flutter_go_chat/features/settings/settings_page.dart';
-import 'package:flutter_go_chat/app/theme/theme_extension.dart';
+
+import 'package:flutter_go_chat/core/layers/particles/particle_system.dart';
+import 'package:flutter_go_chat/core/layers/wallpaper/wallpaper_layer.dart';
+import 'package:flutter_go_chat/core/layers/blur/blur_layer.dart';
 
 class MainUIScreen extends StatefulWidget {
   final PageManager navManager;
@@ -66,8 +70,6 @@ class _MainUIScreenState extends State<MainUIScreen> {
   @override
   Widget build(BuildContext context) {
     final g = GlobalScreenManager.of(context);
-    final colors = Theme.of(context).extension<AppThemeExtension>()!.colors;
-
 
     return LayoutBuilder(
       builder: (cntxt, constraints) {
@@ -84,13 +86,28 @@ class _MainUIScreenState extends State<MainUIScreen> {
                   child: Stack(
                     children: [
                       // Wallpaper layer
+                      // Positioned.fill(
+                      //   left: 0,
+                      //   top: 0,
+                      //   child: g.wallpaperUrl != null
+                      //       ? Image.network(g.wallpaperUrl!, fit: BoxFit.fill)
+                      //       : Container(
+                      //           color: colors.background,
+                      //         ), // Image.asset(wallpaper)
+                      // ),
+
                       Positioned.fill(
                         left: 0,
                         top: 0,
-                        child:
-                            g.wallpaperUrl != null ? Image.network(g.wallpaperUrl!, fit: BoxFit.fill) : Container(color: colors.background), // Image.asset(wallpaper)
+                        child: WallpaperLayer(),
                       ),
 
+                      // Particle effect layer
+                      Positioned.fill(left: 0, top: 0, child: ParticleSystem()),
+
+                      Positioned.fill(left: 0, top: 0, child: BlurLayer()),
+
+                      // Pages layer
                       AnimatedPadding(
                         duration: Duration(
                           milliseconds: 270,
@@ -116,11 +133,6 @@ class _MainUIScreenState extends State<MainUIScreen> {
                                 constraints: constraints,
                               ),
                       ),
-
-                      // Align(
-                      //   alignment: g.isDesktop(context) ? .topEnd : .topCenter,
-                      //   child: pagesWidget
-                      // )
                     ],
                   ),
                 ),

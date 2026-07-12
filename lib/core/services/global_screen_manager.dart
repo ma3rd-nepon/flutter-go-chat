@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_go_chat/core/services/page_manager.dart';
+import 'package:flutter_go_chat/core/layers/wallpaper/wallaper_type.dart';
 
-class GlobalScreenManager extends InheritedWidget {
+class GlobalScreenManager extends InheritedWidget { // поделить на нотифаеры, добавить список партикл пресетов, добавить список обоев
   final bool isLoggedIn;
   final Function(int) loginSuccess;
   final PageManager uiManager;
   final int? currentUserId;
   final VoidCallback barToggle;
   final bool barHidden;
-  final String? wallpaperUrl;
-  final Function(String?) changeWallpaper;
+  final WallpaperType wallpaperType;
+  final Function(WallpaperType) changeWallpaperType;
+  // final Function(String) changeWallpaperContent;
+  final Function(String) changeParticleEffect;
+  final String? particleEffectId;
 
   const GlobalScreenManager({
     super.key, 
@@ -21,8 +25,11 @@ class GlobalScreenManager extends InheritedWidget {
     required this.currentUserId,
     required this.barToggle,
     required this.barHidden,
-    required this.wallpaperUrl,
-    required this.changeWallpaper
+    required this.wallpaperType,
+    required this.changeWallpaperType,
+    // required this.changeWallpaperContent,
+    required this.changeParticleEffect,
+    required this.particleEffectId,
   });
 
   void redirect(BuildContext context, String url, Object? args) async {
@@ -35,7 +42,7 @@ class GlobalScreenManager extends InheritedWidget {
     return result;
   }
 
-  void throwError(context, String errorMessage) {
+  void throwError(BuildContext context, String errorMessage) {
     redirect(context, '/error', "from ${ModalRoute.of(context)?.settings.name ?? "unknown route"}: $errorMessage");
   }
 
@@ -47,6 +54,9 @@ class GlobalScreenManager extends InheritedWidget {
 
   @override
   bool updateShouldNotify(GlobalScreenManager old) {
-    return currentUserId != old.currentUserId;
+    return currentUserId != old.currentUserId ||
+        particleEffectId != old.particleEffectId ||
+        wallpaperType != old.wallpaperType ||
+        barHidden != old.barHidden;
   }
 }
