@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_go_chat/core/services/page_manager.dart';
 import 'package:flutter_go_chat/core/layers/wallpaper/wallaper_type.dart';
 
+@Deprecated("Use controllers instead")
 class GlobalScreenManager extends InheritedWidget { // поделить на нотифаеры, добавить список партикл пресетов, добавить список обоев
+  
   final bool isLoggedIn;
   final Function(int) loginSuccess;
   final PageManager uiManager;

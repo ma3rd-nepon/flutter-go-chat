@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/scheduler/ticker.dart';
 
 import 'package:flutter_go_chat/core/layers/particles/particle_effect.dart';
-import 'package:flutter_go_chat/core/services/global_screen_manager.dart';
+import 'package:flutter_go_chat/core/layers/particles/particle_preset.dart';
+import 'package:flutter_go_chat/core/services/app_scope/scope.dart';
 
 class ParticleSystem extends StatefulWidget {
   const ParticleSystem({super.key});
@@ -14,6 +15,7 @@ class ParticleSystem extends StatefulWidget {
 
 class ParticleSystemState extends State<ParticleSystem>
     with SingleTickerProviderStateMixin {
+  late final SettingsController settingsController;
   late final Ticker _ticker;
   ParticleEffect? _currentEffect;
   Size? _size;
@@ -24,15 +26,23 @@ class ParticleSystemState extends State<ParticleSystem>
   @override
   void initState() {
     super.initState();
+
+    settingsController = AppScope.read(context).settingsController;
+    settingsController.addListener(() => _syncEffect(settingsController.particleEffectId));
+
     _ticker = createTicker((elapsed) => _handleFrame());
     _ticker.start();
+  }
+
+  void updateState() {
+    setState(() {});
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final g = GlobalScreenManager.of(context);
-    _syncEffect(g.particleEffectId);
+    final g = AppScope.of(context);
+    _syncEffect(g.settingsController.particleEffectId);
   }
 
   void _syncEffect(String? effectId) {
@@ -44,31 +54,19 @@ class ParticleSystemState extends State<ParticleSystem>
     _lastFrameTime = null;
     _currentEffect?.dispose();
 
-    switch (effectId) {
-      case 'snow':
-        _currentEffect = SnowEffect();
-        break;
-      case 'rain':
-        _currentEffect = RainEffect();
-        break;
-      case 'network':
-        _currentEffect = NetworkEffect();
-        break;
-      case 'dust':
-        _currentEffect = DustEffect();
-        break;
-      case 'starrain':
-        _currentEffect = StarRainEffect();
-        break;
-      default:
-        _currentEffect = null;
-    }
+    final preset = ParticlePreset.values
+    .where((e) => e.id == effectId)
+    .firstOrNull;
+
+    _currentEffect = preset?.builder();
 
     _effectInitialized = false;
     if (_size != null) {
       _currentEffect?.init(_size!);
       _effectInitialized = true;
     }
+
+    updateState();
   }
 
   void _handleFrame() {
@@ -90,6 +88,7 @@ class ParticleSystemState extends State<ParticleSystem>
   void dispose() {
     _ticker.dispose();
     _currentEffect?.dispose();
+    settingsController.removeListener(() => _syncEffect(settingsController.particleEffectId));
     super.dispose();
   }
 

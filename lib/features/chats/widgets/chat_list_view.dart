@@ -4,6 +4,7 @@ import 'package:flutter_go_chat/features/chats/widgets/view/desktop_chat_tile.da
 import 'package:flutter_go_chat/features/chats/widgets/chat_tabs.dart';
 import 'package:flutter_go_chat/core/services/database/db_service.dart';
 import 'package:flutter_go_chat/features/chats/widgets/view/mobile_chat_tile.dart';
+import 'package:flutter_go_chat/core/extensions/l10n_extension.dart';
 
 class ChatListView extends StatelessWidget {
   final int tileWidth = 350;
@@ -35,14 +36,14 @@ class ChatListView extends StatelessWidget {
                 }
                 if (snapshot.hasError) {
                   return Center(
-                    child: Text("ERROR ChatListView on ${isDesktop ? "Desktop" : "Mobile"} UI: ${snapshot.error}"),
+                    child: Text(context.l10n.unexpectError(snapshot.error.toString())),
                   );
                 }
 
                 final chatList = snapshot.data ?? [];
 
                 if (chatList.isEmpty) {
-                  return Center(child: Text("Начните общение"));
+                  return Center(child: Text(context.l10n.emptyChats));
                 }
                 final reverse = false;
                 final itemCount = chatList.length;

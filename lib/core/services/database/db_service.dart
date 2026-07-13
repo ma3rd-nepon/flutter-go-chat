@@ -154,6 +154,10 @@ class DatabaseService {
   Future<Chat?> getChat(int chatId) {
     return _db.getChat(chatId);
   }
+
+  Future<User?> getUser(int userId) {
+    return _db.getUser(userId);
+  }
 }
 
 @DriftDatabase(
@@ -239,7 +243,7 @@ class MyDatabase extends _$MyDatabase {
   }
 
   Stream<List<(Chat, Message?)>> watchAllChats() {
-    final query = select(chats)..orderBy([(c) => OrderingTerm.asc(c.updatedAt)]);
+    final query = select(chats)..orderBy([(c) => OrderingTerm.desc(c.updatedAt)]);
 
     return query.watch().asyncMap((chatList) async {
       final result = <(Chat, Message?)>[];
@@ -291,6 +295,10 @@ class MyDatabase extends _$MyDatabase {
     return (select(
       chats,
     )..where((chat) => chat.id.equals(chatId))).getSingleOrNull();
+  }
+
+  Future<User?> getUser(int userId) {
+    return (select(users)..where((user) => user.id.equals(userId))).getSingleOrNull();
   }
 
   Future<void> updateChat(int chatId) {

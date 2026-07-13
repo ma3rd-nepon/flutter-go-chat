@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_go_chat/core/services/global_screen_manager.dart';
 
-import 'package:flutter_go_chat/core/services/page_manager.dart';
 import 'package:flutter_go_chat/core/widgets/app_tabs_bar.dart';
+import 'package:flutter_go_chat/core/icons/app_icons.dart';
 import 'package:flutter_go_chat/app/shell/window.dart';
 
 import 'package:flutter_go_chat/features/calls/calls_page.dart';
@@ -12,33 +11,41 @@ import 'package:flutter_go_chat/features/settings/settings_page.dart';
 
 import 'package:flutter_go_chat/core/layers/particles/particle_system.dart';
 import 'package:flutter_go_chat/core/layers/wallpaper/wallpaper_layer.dart';
-import 'package:flutter_go_chat/core/layers/blur/blur_layer.dart';
+
+import 'package:flutter_go_chat/core/services/app_scope/scope.dart';
+
+import 'package:flutter_go_chat/core/widgets/nova_design/nova_design.dart';
 
 class MainUIScreen extends StatefulWidget {
-  final PageManager navManager;
   final int currentUserId;
 
-  const MainUIScreen({
-    super.key,
-    required this.navManager,
-    required this.currentUserId,
-  });
+  const MainUIScreen({super.key, required this.currentUserId});
 
   @override
   State<MainUIScreen> createState() => _MainUIScreenState();
 }
 
 class _MainUIScreenState extends State<MainUIScreen> {
+  late final NavigationController navController;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
   @override
   void initState() {
     super.initState();
-    widget.navManager.addListener(updateState);
+
+    navController = AppScope.read(context).navController;
+    navController.addListener(updateState);
+
     _initPages();
   }
 
   @override
   void dispose() {
-    widget.navManager.removeListener(updateState);
+    navController.removeListener(updateState);
     super.dispose();
   }
 
@@ -47,41 +54,54 @@ class _MainUIScreenState extends State<MainUIScreen> {
   }
 
   void _initPages() {
-    List<PageEntry> defaultPages = [
-      PageEntry(id: PageId.profile, page: ProfileScreen(), canBeClosed: false),
-      PageEntry(
+    List<PageConfig> defaultPages = [
+      PageConfig(
+        id: PageId.profile,
+        page: ProfileScreen(),
+        canBeClosed: false,
+        icon: AppIcons.profile,
+      ),
+      PageConfig(
         id: PageId.chat,
         page: ChatsPage(currentUserId: widget.currentUserId),
         canBeClosed: false,
+        icon: AppIcons.chats,
       ),
-      PageEntry(id: PageId.calls, page: CallsScreen(), canBeClosed: false),
-      PageEntry(
+      PageConfig(
+        id: PageId.calls,
+        page: CallsScreen(),
+        canBeClosed: false,
+        icon: AppIcons.calls,
+      ),
+      PageConfig(
         id: PageId.settings,
         page: SettingsScreen(),
         canBeClosed: false,
+        icon: AppIcons.settings,
       ),
     ];
 
     for (final page in defaultPages) {
-      widget.navManager.openPage(page);
+      navController.openPage(page);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final g = GlobalScreenManager.of(context);
+    final g = AppScope.of(context);
+    final isDesktop = g.isDesktop(context);
+    final uiController = g.uiController;
 
     return LayoutBuilder(
       builder: (cntxt, constraints) {
         final pagesWidget = IndexedStack(
-          index: widget.navManager.currentIndex,
-          children: widget.navManager.pages.map((e) => e.page).toList(),
+          index: navController.currentIndex,
+          children: navController.pages.map((e) => e.page).toList(),
         );
         return Scaffold(
           body: SafeArea(
             child: Column(
               children: [
-                const MyAppBar(),
                 Expanded(
                   child: Stack(
                     children: [
@@ -95,43 +115,53 @@ class _MainUIScreenState extends State<MainUIScreen> {
                       //           color: colors.background,
                       //         ), // Image.asset(wallpaper)
                       // ),
-
-                      Positioned.fill(
-                        left: 0,
-                        top: 0,
-                        child: WallpaperLayer(),
-                      ),
+                      Positioned.fill(left: 0, top: 0, child: WallpaperLayer()),
 
                       // Particle effect layer
                       Positioned.fill(left: 0, top: 0, child: ParticleSystem()),
 
-                      Positioned.fill(left: 0, top: 0, child: BlurLayer()),
+                      NovaContainer(
+                        alignment: .topCenter,
+                        padding: EdgeInsets.all(5),
+                        child: MyAppBar(),
+                      ),
 
                       // Pages layer
-                      AnimatedPadding(
-                        duration: Duration(
-                          milliseconds: 270,
-                        ), // модификатор анимаций
-                        padding: EdgeInsets.only(
-                          left: g.isDesktop(context) && !g.barHidden ? 250 : 0,
-                        ),
-                        child: pagesWidget,
+                      ListenableBuilder(
+                        listenable: uiController,
+                        builder: (context, child) {
+                          return AnimatedPadding(
+                            duration: Duration(
+                              milliseconds: 270,
+                            ), // модификатор анимаций
+                            padding: EdgeInsets.only(
+                              left: isDesktop && !uiController.barHidden ? isDesktop ? 270 : 30 : 1,
+                              top: 90,
+                              bottom: isDesktop ? 20 : !uiController.barHidden ? 1 : 35,
+                              right: isDesktop ? 20 : 1,
+                            ),
+                            child: NovaContainer(child: pagesWidget),
+                          );
+                        },
                       ),
 
                       // Widgets Layer
-                      Align(
-                        alignment: g.isDesktop(context)
-                            ? .topStart
-                            : .bottomCenter,
-                        child: g.isDesktop(context)
-                            ? AppRailBar(
-                                navManager: widget.navManager,
-                                constraints: constraints,
-                              )
-                            : AppBottomBar(
-                                navManager: widget.navManager,
-                                constraints: constraints,
-                              ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 50),
+                        child: Align(
+                          alignment: g.isDesktop(context)
+                              ? .topStart
+                              : .bottomCenter,
+                          child: g.isDesktop(context)
+                              ? AppRailBar(
+                                  navController: navController,
+                                  constraints: constraints,
+                                )
+                              : AppBottomBar(
+                                  navController: navController,
+                                  constraints: constraints,
+                                ),
+                        ),
                       ),
                     ],
                   ),

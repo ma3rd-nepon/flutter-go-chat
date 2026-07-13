@@ -1,4 +1,4 @@
-# 0xEFD15DA7
+# supernoVA
 
 [![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev) [![Dart](https://img.shields.io/badge/Dart-0175C2?style=flat&logo=dart&logoColor=white)](https://dart.dev)
 [![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)](https://go.dev)
@@ -8,7 +8,7 @@
 Crossplatform messenger based on Flutter.
 
 ### About project
-0xEFD15DA7 is a real-time chat application designed from the ground up for speed and reliability. The client is written entirely in Dart using the Flutter framework, providing native performance on Windows, Linux, macOS, Android, and iOS from a single codebase. The backend is powered by Go, chosen for its lightweight concurrency model and excellent WebSocket support (ofc also for multistreaming).
+supernoVA is a real-time chat application designed from the ground up for speed and reliability. The client is written entirely in Dart using the Flutter framework, providing native performance on Windows, Linux, macOS, Android, and iOS from a single codebase. The backend is powered by Go, chosen for its lightweight concurrency model and excellent WebSocket support (ofc also for multistreaming).
 
 ### Requirements
  - Flutter SDK ^3.44.4
@@ -19,9 +19,9 @@ Crossplatform messenger based on Flutter.
 ### Installation
 
 ```bash
-git clone https://github.com/ma3rd-nepon/go_dart_e2e.git
+git clone https://github.com/ma3rd-nepon/flutter-go-chat.git
 
-cd go_dart_e2e
+cd flutter-go-chat
 
 flutter pub get
 
@@ -40,16 +40,16 @@ lib/
 
 ### Technologies
 
-| Layer | Technology | Implemented By |
-|-------|------------|----------------|
-| **Frontend** | Flutter, Dart  | ma3rd-nepon |
-| **Backend** | Go / SQLite     | MetSunSawedOfWire |
-| **Requests** | WebSocket, HTTP | MetSunSawedOfWire |
-| **Database** | SQLite, PostgreSQL | MetSunSawedOfWire |
-| **State** | setState, Provider, Riverpod | ma3rd-nepon |
-| **Auth** | JWT, OAuth 2.0 | ma3rd-nepon |
-| **Storage** | Local FS, S3 | MetSunSawedOfWire |
-| **Sponsor** | Money | MetSunSawedOfWire |
+| Layer | Technology | Implemented By | Status |
+|-------|------------|----------------|--------|
+| **Frontend** | Flutter, Dart  | ma3rd-nepon | WIP |
+| **Backend** | Go / SQLite     | MetSunSawedOfWire | DONE |
+| **Requests** | WebSocket, HTTP | MetSunSawedOfWire | TBA |
+| **Database** | SQLite, PostgreSQL | MetSunSawedOfWire | WIP |
+| **State** | setState, Provider, Riverpod | ma3rd-nepon | DONE |
+| **Auth** | JWT, OAuth 2.0 | ma3rd-nepon | TBA |
+| **Storage** | Local FS, S3 | MetSunSawedOfWire | TBA |
+| **Sponsor** | Money | MetSunSawedOfWire | WIP |
 
 
 ---

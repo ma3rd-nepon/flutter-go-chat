@@ -3,6 +3,8 @@ import "package:flutter_go_chat/app/theme/theme_extension.dart";
 import 'package:flutter_go_chat/core/icons/app_icons.dart';
 import 'package:flutter_go_chat/features/chats/widgets/chat_tabs.dart';
 import 'package:flutter_go_chat/features/chats/widgets/message_list.dart';
+import 'package:flutter_go_chat/core/extensions/l10n_extension.dart';
+import 'package:flutter_go_chat/core/services/app_scope/scope.dart';
 
 class ChatBody extends StatelessWidget {
   final _controller = TextEditingController();
@@ -28,7 +30,7 @@ class ChatBody extends StatelessWidget {
                   autofocus: true,
                   focusNode: _focusNode,
                   controller: _controller,
-                  decoration: InputDecoration(hintText: "Enter a message"),
+                  decoration: InputDecoration(hintText: context.l10n.enterMessage),
                   onSubmitted: (_) => sendMsg());
     
     final enterMessageField = isDesktop ? textWidget : AnimatedPadding(
@@ -55,7 +57,7 @@ class ChatBody extends StatelessWidget {
             children: [
               IconButton(
                 icon: Icon(AppIcons.back),
-                onPressed: () => inherited.setChat(null),
+                onPressed: () { inherited.setChat(null); AppScope.read(context).uiController.toggleBar(false);},
               ),
               Column(
                 children: [
@@ -67,7 +69,7 @@ class ChatBody extends StatelessWidget {
                         text = "...";
                       }
                       if (snapshot.hasError) {
-                        text = "Error: ${snapshot.error}";
+                        text = context.l10n.unexpectError(snapshot.error.toString());
                       }
 
                       if (text.isEmpty) {

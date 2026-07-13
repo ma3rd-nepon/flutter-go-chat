@@ -5,6 +5,7 @@ import "package:flutter_go_chat/app/theme/theme_extension.dart";
 import 'package:flutter_go_chat/core/icons/app_icons.dart';
 import 'package:flutter_go_chat/features/chats/widgets/chat_tabs.dart';
 import 'package:flutter_go_chat/core/services/database/db_service.dart';
+import 'package:flutter_go_chat/core/extensions/l10n_extension.dart';
 
 class MobileChatTile extends StatefulWidget {
   final Chat chat;
@@ -81,11 +82,11 @@ class _MobileChatTileState extends State<MobileChatTile> {
                           crossAxisAlignment: .start,
                           mainAxisAlignment: .start,
                           children: [
-                            Text(widget.chat.name ?? "NAME ERROR"),
+                            Text(widget.chat.name ?? context.l10n.nameError),
                             const SizedBox(height: 10),
                             widget.chat.type == "private"
                                 ? Text(
-                                    "был(а) недавно",
+                                    context.l10n.wasRecently,
                                     style: TextStyle(fontSize: 13),
                                   )
                                 : SizedBox(height: 14), // websocket poll
@@ -112,7 +113,7 @@ class _MobileChatTileState extends State<MobileChatTile> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      isMe ? Text("Вы: ") : SizedBox.shrink(),
+                      isMe ? Text(context.l10n.you) : SizedBox.shrink(),
                       Expanded(
                         child: Text(
                           widget.lastMsg?.content ?? "None",

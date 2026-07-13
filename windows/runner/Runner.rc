@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "go_dart_e2e" "\0"
+            VALUE "FileDescription", "supernoVA" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "go_dart_e2e" "\0"
+            VALUE "InternalName", "supernovA" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "go_dart_e2e.exe" "\0"
-            VALUE "ProductName", "go_dart_e2e" "\0"
+            VALUE "OriginalFilename", "supernoVA.exe" "\0"
+            VALUE "ProductName", "supernoVA" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

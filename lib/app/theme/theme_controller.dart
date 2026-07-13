@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_go_chat/core/services/json_loader.dart';
 import 'package:flutter_go_chat/app/theme/theme_builder.dart';
-
-enum AppThemeType { dark, light }
-enum AppAccentType {blue, orange}
+import 'package:flutter_go_chat/app/theme/theme_list.dart';
 
 class ThemeController extends ChangeNotifier {
   ThemeController._();
@@ -23,8 +21,10 @@ class ThemeController extends ChangeNotifier {
     AppThemeType? theme,
     AppAccentType? accent
   ) async {
-    if (theme != null) currentTheme = theme; 
-    if (accent != null) currentAccent = accent;
+    if (theme == null && accent == null) return;
+
+    currentTheme = theme ?? currentTheme; 
+    currentAccent = accent ?? currentAccent;
 
     final basePath = "assets/themes/base/${currentTheme.name}.json";
     final accentPath = "assets/themes/accent/${currentAccent.name}.json";

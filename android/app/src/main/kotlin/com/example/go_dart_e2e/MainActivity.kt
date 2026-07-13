@@ -1,4 +1,4 @@
-package com.example.go_dart_e2e
+package com.example.supernoVA
 
 import io.flutter.embedding.android.FlutterActivity
 

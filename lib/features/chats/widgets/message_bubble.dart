@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_go_chat/app/theme/theme_extension.dart";
 import 'package:flutter_go_chat/core/services/database/db_service.dart';
+import 'package:flutter_go_chat/core/extensions/l10n_extension.dart';
 
 class MessageBubble extends StatelessWidget {
   final Message message;
@@ -8,7 +9,7 @@ class MessageBubble extends StatelessWidget {
 
   const MessageBubble({super.key, required this.message, required this.isMe});
 
-  String get text => message.content ?? "Сообщение удалено";
+  String get text => message.content ?? "does not work";
 
   @override
   Widget build(BuildContext context) {

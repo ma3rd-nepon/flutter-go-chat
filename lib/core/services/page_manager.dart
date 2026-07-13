@@ -30,6 +30,7 @@ enum PageId {
   final IconData icon;
 }
 
+@Deprecated("Use NavigationController instead")
 class PageManager extends ChangeNotifier {
   static const int maxPages = 6;
 

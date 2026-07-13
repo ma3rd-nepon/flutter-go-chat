@@ -3,11 +3,12 @@ import 'package:flutter_go_chat/app/theme/theme_extension.dart';
 import 'package:flutter_go_chat/core/icons/app_icons.dart';
 import 'package:flutter_go_chat/core/widgets/buttons.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:flutter_go_chat/core/extensions/l10n_extension.dart';
 
 class MyAppBar extends StatelessWidget {
   final bool _needSearch;
   final String name =
-      "supernova*"; // тут можно и текстом и иконкой, сам смотри че выберешь
+      "SuperNova*"; // тут можно и текстом и иконкой, сам смотри че выберешь
 
   const MyAppBar({super.key, this._needSearch = true});
 
@@ -22,10 +23,10 @@ class MyAppBar extends StatelessWidget {
         children: [
           LogoButton(text: name, onPress: () {}),
           _needSearch
-              ? const SizedBox(
+              ? SizedBox(
                   width: 250,
                   child: TextField(
-                    decoration: InputDecoration(hintText: "Search smth..."),
+                    decoration: InputDecoration(hintText: context.l10n.searchBar),
                   ),
                 )
               : SizedBox(width: 100),

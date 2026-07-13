@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_go_chat/core/services/global_screen_manager.dart';
+import 'package:flutter_go_chat/core/services/app_scope/scope.dart';
+import 'package:flutter_go_chat/core/extensions/l10n_extension.dart';
 
 class ErrorScreen extends StatefulWidget {
   const ErrorScreen({super.key});
@@ -12,7 +13,7 @@ class ErrorScreen extends StatefulWidget {
 class _ErrorScreenState extends State<ErrorScreen> {
   @override
   Widget build(BuildContext context) {
-    final g = GlobalScreenManager.of(context);
+    final g = AppScope.of(context);
 
     final error = ModalRoute.of(context)!.settings.arguments as String;
     final child = Scaffold(
@@ -22,11 +23,11 @@ class _ErrorScreenState extends State<ErrorScreen> {
             mainAxisAlignment: .center,
             crossAxisAlignment: .center,
             children: [
-              Text("Произошла непредвиденная ошибка: \n $error"),
+              Text(context.l10n.unexpectError(error)),
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () => g.redirect(context, "/main_ui", null),
-                child: Text("На гл экран"),
+                child: Text(context.l10n.toMain),
               ),
             ],
           ),
@@ -40,7 +41,7 @@ class _ErrorScreenState extends State<ErrorScreen> {
             canPop: false,
             onPopInvokedWithResult: (didPop, result) {
               if (didPop) return;
-              GlobalScreenManager.of(context).goBack(context);
+              g.goBack(context);
             },
 
             child: child,

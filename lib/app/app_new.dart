@@ -3,15 +3,15 @@ import 'package:window_manager/window_manager.dart';
 import 'dart:io';
 
 import 'package:flutter_go_chat/app/theme/theme_controller.dart';
-import 'package:flutter_go_chat/core/services/global_screen_manager.dart';
-import 'package:flutter_go_chat/core/services/page_manager.dart';
+import 'package:flutter_go_chat/l10n/app_locale.dart';
 import 'package:flutter_go_chat/app/shell/welcome_screen/welcome_screen.dart';
 import 'package:flutter_go_chat/app/shell/login_screen/login_screen.dart';
 import 'package:flutter_go_chat/app/shell/error_screen/error_screen.dart';
 import 'package:flutter_go_chat/app/shell/startup_screen/startup_screen.dart';
 import 'package:flutter_go_chat/app/shell/window.dart';
 import 'package:flutter_go_chat/app/shell/main_ui_screen/main_ui_screen.dart';
-import 'package:flutter_go_chat/core/layers/wallpaper/wallaper_type.dart';
+
+import 'package:flutter_go_chat/core/services/app_scope/scope.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -20,24 +20,25 @@ class AppShell extends StatefulWidget {
   State<AppShell> createState() => _AppShellState();
 }
 
-
 /*
 пофиксить закрытие чата и смену влкадок при смене юи (а хотя нахуя?)
 */
 class _AppShellState extends State<AppShell> with WindowListener {
   // bool _isPortrait = true;
   bool _isMaximized = false;
-  bool _isLoggedIn = false;
-  bool barHidden = false;
 
-  final uiManager = PageManager();
-  int? currentUserId;
-  
+  // final uiManager = PageManager();
+
   String? errorText;
-  
-  WallpaperType wallpaperType = WallpaperType.gradient;
-  List<String> wallpaperContent = []; // [color, gradient, asset, url]
-  String? particleEffectId;
+
+  // WallpaperType wallpaperType = WallpaperType.gradient;
+  // List<String> wallpaperContent = []; // [color, gradient, asset, url]
+  // String? particleEffectId;
+
+  final authCon = AuthController();
+  final navCon = NavigationController();
+  final setCon = SettingsController();
+  final uiCon = UIController();
 
   @override
   void initState() {
@@ -59,30 +60,33 @@ class _AppShellState extends State<AppShell> with WindowListener {
 
       windowManager.addListener(this);
     }
+
+    setCon.load();
+    authCon.restoreSession();
   }
 
-  void loginSuccess(int newUserId) {
-    _isLoggedIn = true;
-    currentUserId = newUserId;
-    setState(() {});
-  }
+  // void loginSuccess(int newUserId) {
+  //   _isLoggedIn = true;
+  //   currentUserId = newUserId;
+  //   setState(() {});
+  // }
 
-  void barToggle() {
-    setState(() => barHidden = !barHidden);
-  }
+  // void barToggle() {
+  //   setState(() => barHidden = !barHidden);
+  // }
 
-  void changeWallpaperType(WallpaperType type) {
-    setState(() => wallpaperType = type);
-  }
+  // void changeWallpaperType(WallpaperType type) {
+  //   setState(() => wallpaperType = type);
+  // }
 
   // void changeWallpaperContent(String content) {
   //   final l = [WallpaperType.color, WallpaperType.gradient, WallpaperType.asset, WallpaperType.url];
   //   setState(() => wallpaperContent[l.indexOf(wallpaperType)] = content);
   // }
 
-  void changeParticleEffect(String id) {
-    setState(() => particleEffectId = id);
-  }
+  // void changeParticleEffect(String id) {
+  //   setState(() => particleEffectId = id);
+  // }
 
   @override
   void onWindowMaximize() => setState(() => _isMaximized = true);
@@ -108,19 +112,20 @@ class _AppShellState extends State<AppShell> with WindowListener {
     final controller = ThemeController.instance;
 
     return AnimatedBuilder(
-      animation: controller,
+      animation: Listenable.merge([controller, setCon]),
       builder: (context, build) {
         return MaterialApp(
+          locale: setCon.locale,
+          supportedLocales: AppLocale.supportedLocales,
+          localizationsDelegates: AppLocale.delegates,
           theme: controller.theme,
-          home: StartupScreen(isLoggedIn: _isLoggedIn),
+          home: StartupScreen(isLoggedIn: authCon.currentState == .authorized),
           routes: {
             '/welcome': (context) => WelcomeScreen(),
             '/login': (context) => LoginScreen(),
             '/error': (context) => ErrorScreen(),
-            '/main_ui': (context) => MainUIScreen(
-              navManager: uiManager,
-              currentUserId: currentUserId!,
-            ),
+            '/main_ui': (context) =>
+                MainUIScreen(currentUserId: authCon.currentUserId!),
           },
           builder: (context, child) {
             final isDesktop = MediaQuery.sizeOf(context).width > 800;
@@ -130,18 +135,11 @@ class _AppShellState extends State<AppShell> with WindowListener {
                     ? WindowControls(maximize: toggleMaximize)
                     : SizedBox.shrink(),
                 Expanded(
-                  child: GlobalScreenManager(
-                    isLoggedIn: _isLoggedIn,
-                    loginSuccess: loginSuccess,
-                    uiManager: uiManager,
-                    currentUserId: currentUserId,
-                    barToggle: barToggle,
-                    barHidden: barHidden,
-                    wallpaperType: wallpaperType,
-                    changeWallpaperType: changeWallpaperType,
-                    // changeWallpaperContent: changeWallpaperContent,
-                    changeParticleEffect: changeParticleEffect,
-                    particleEffectId: particleEffectId,
+                  child: AppScope(
+                    authController: authCon,
+                    navController: navCon,
+                    settingsController: setCon,
+                    uiController: uiCon,
                     child: child!,
                   ),
                 ),
@@ -154,7 +152,7 @@ class _AppShellState extends State<AppShell> with WindowListener {
   }
 }
         
-        // GlobalScreenManager(
+        // GlobalScreenManager(Ф
         //   isLoggedIn: _isLoggedIn,
         //   loginSuccess: loginSuccess,
         //   uiManager: uiManager,

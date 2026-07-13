@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_go_chat/core/services/global_screen_manager.dart';
+import 'package:flutter_go_chat/core/services/app_scope/scope.dart';
 import 'package:flutter_go_chat/app/shell/login_screen/widgets/password_field.dart';
+import 'package:flutter_go_chat/core/extensions/l10n_extension.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,7 +12,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  String startText = "Sign in";
   final _loginController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -33,18 +33,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (login.isNotEmpty && RegExp(r'^\d+$').hasMatch(login)) {
       success(int.parse(login));
-      GlobalScreenManager.of(context).redirect(context, '/main_ui', null);
+      AppScope.of(context).redirect(context, '/main_ui', null);
     } else {
-      setState(() => startText = "Enter valid ID");
+      setState(() {});
       _loginController.clear();
       _passwordController.clear();
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    final g = GlobalScreenManager.of(context);
-    final Function(int) loginSuccess = g.loginSuccess;
+  Widget build(BuildContext context) { 
+    final g = AppScope.of(context);
+    final Function(int) loginSuccess = g.authController.login;
+    String startText = context.l10n.signIn;
 
     final child = Scaffold(
       body: SafeArea(
@@ -61,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: 250,
                 child: TextField(
                   controller: _loginController,
-                  decoration: InputDecoration(hintText: "Enter your ID"),
+                  decoration: InputDecoration(hintText: context.l10n.enterLogin),
                 ),
               ),
               const SizedBox(height: 4),
@@ -71,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 10),
               ElevatedButton(
-                child: Text(g.isDesktop(context) ? "БУРМАЛДИТЬ С ПК" : "БУРМАЛДА МОБАЙЛ"),
+                child: Text(g.isDesktop(context) ? context.l10n.signInDesktop : context.l10n.signInMobile),
                 onPressed: () => startLogin(loginSuccess),
               ),
             ],
@@ -86,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
             canPop: false,
             onPopInvokedWithResult: (didPop, result) {
               if (didPop) return;
-              GlobalScreenManager.of(context).goBack(context);
+              g.goBack(context);
             },
 
             child: child,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_go_chat/core/layers/wallpaper/wallaper_type.dart';
-import 'package:flutter_go_chat/core/services/global_screen_manager.dart';
+import 'package:flutter_go_chat/core/services/app_scope/scope.dart';
 import 'package:flutter_go_chat/app/theme/theme_extension.dart';
 
 class WallpaperLayer extends StatefulWidget {
@@ -22,8 +22,8 @@ class _WallpaperLayerState extends State<WallpaperLayer> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppThemeExtension>()!.colors;
-    final g = GlobalScreenManager.of(context);
-    wallpaperType = g.wallpaperType;
+    final g = AppScope.of(context);
+    wallpaperType = g.settingsController.wallpaperType;
 
     switch (wallpaperType) {
       case WallpaperType.color:

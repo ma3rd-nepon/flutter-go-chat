@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_go_chat/core/services/page_manager.dart';
+
 import 'package:flutter_go_chat/app/theme/theme_extension.dart';
-import 'package:flutter_go_chat/core/icons/app_icons.dart';
-import 'package:flutter_go_chat/core/services/global_screen_manager.dart';
 import 'package:flutter_go_chat/core/widgets/buttons.dart';
+import 'package:flutter_go_chat/core/services/app_scope/scope.dart';
+import 'package:flutter_go_chat/core/widgets/nova_design/nova_design.dart';
 
 class AppBottomBar extends StatefulWidget {
-  final PageManager navManager;
+  final NavigationController navController;
   final BoxConstraints constraints;
 
   const AppBottomBar({
     super.key,
-    required this.navManager,
+    required this.navController,
     required this.constraints,
   });
 
@@ -20,65 +20,75 @@ class AppBottomBar extends StatefulWidget {
 }
 
 class _AppBottomBarState extends State<AppBottomBar> {
+  late final UIController uiController;
+
   @override
   void initState() {
     super.initState();
+
+    uiController = AppScope.read(context).uiController;
+    uiController.addListener(updateState);
+  }
+
+  void updateState() {
+    if (!mounted) return;
+    setState(() {});
   }
 
   @override
   void dispose() {
+    uiController.removeListener(updateState);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.navManager.pages.isEmpty) return const SizedBox.shrink();
+    if (widget.navController.pages.isEmpty) return const SizedBox.shrink();
 
     final colors = Theme.of(context).extension<AppThemeExtension>()!.colors;
-    final g = GlobalScreenManager.of(context);
+    final g = AppScope.of(context);
+
+    final uiController = g.uiController;
 
     return AnimatedSlide(
       duration: const Duration(
         milliseconds: 250,
       ), // потом добавим множитель анимаций
-      offset: g.barHidden ? Offset(0, 0.75) : Offset.zero,
+      offset: uiController.barHidden ? Offset(0, 0.75) : Offset.zero,
       child: Padding(
-        padding: EdgeInsets.only(bottom: 30),
-        child: Container(
-          height: 100,
-          width: 400,
-          padding: EdgeInsets.all(5),
-          margin: EdgeInsets.all(5),
+        padding: EdgeInsets.only(bottom: 20),
+        child: NovaContainer(
+          height: widget.constraints.maxHeight * 0.15,
+          width: widget.constraints.maxWidth * 0.6,
+          padding: EdgeInsets.all(2),
+          margin: EdgeInsets.all(2),
           alignment: .topStart,
           child: Column(
+            mainAxisSize: .min,
             children: [
               Padding(
-                padding: EdgeInsets.only(left: 8),
+                padding: EdgeInsets.only(left: 4),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: NavBarToggler(
-                    onPressed: () => g.barToggle(),
-                    isActive: !g.barHidden,
+                    onPressed: () => uiController.toggleBar(null),
+                    isActive: !uiController.barHidden,
                   ),
                 ),
               ),
 
-              Container(
+              NovaContainer(
                 alignment: .center,
-                decoration: BoxDecoration(
-                  border: Border.all(color: colors.border),
-                  borderRadius: BorderRadius.circular(10),
-                ),
                 child: BottomNavigationBar(
-                  currentIndex: _currentNavIndex(widget.navManager.pages),
-                  onTap: (index) => widget.navManager.openPage(
-                    widget.navManager.pages[index],
+                  currentIndex: _currentNavIndex(widget.navController.pages),
+                  onTap: (index) => widget.navController.openPage(
+                    widget.navController.pages[index],
                   ),
                   unselectedFontSize: 8,
                   selectedFontSize: 10,
                   type: BottomNavigationBarType.fixed,
                   backgroundColor: colors.sidebarBackground,
-                  items: widget.navManager.pages.map(_buildItem).toList(),
+                  items: widget.navController.pages.map((page) => _buildItem(page, context)).toList(),
                 ),
               ),
             ],
@@ -88,62 +98,85 @@ class _AppBottomBarState extends State<AppBottomBar> {
     );
   }
 
-  int _currentNavIndex(List<PageEntry> pages) {
-    final currentId = widget.navManager.currentPage.id;
+  int _currentNavIndex(List<PageConfig> pages) {
+    final currentId = widget.navController.currentPage.id;
     final index = pages.indexWhere((t) => t.id == currentId);
     return index != -1 ? index : 0;
   }
 
-  BottomNavigationBarItem _buildItem(PageEntry entry) {
+  BottomNavigationBarItem _buildItem(PageConfig entry, BuildContext context) {
     return BottomNavigationBarItem(
-      icon: Icon(entry.id.icon),
-      label: entry.id.label,
+      icon: Icon(entry.icon),
+      label: entry.label(context),
     );
   }
 }
 
-class AppRailBar extends StatelessWidget {
-  final PageManager navManager;
+class AppRailBar extends StatefulWidget {
+  final NavigationController navController;
   final BoxConstraints constraints;
 
   const AppRailBar({
     super.key,
-    required this.navManager,
+    required this.navController,
     required this.constraints,
   });
 
   @override
+  State<AppRailBar> createState() => _AppRailBarState();
+}
+
+class _AppRailBarState extends State<AppRailBar> {
+  late final UIController uiController;
+  @override
+  void initState() {
+    super.initState();
+
+    uiController = AppScope.read(context).uiController;
+    uiController.addListener(updateState);
+  }
+
+  void updateState() {
+    if (!mounted) return; 
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    uiController.removeListener(updateState);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (navManager.pages.isEmpty) return const SizedBox.shrink();
+    if (widget.navController.pages.isEmpty) return const SizedBox.shrink();
 
     final colors = Theme.of(context).extension<AppThemeExtension>()!.colors;
-    final g = GlobalScreenManager.of(context);
+    final g = AppScope.of(context);
+
+    final uiController = g.uiController;
 
     return AnimatedSlide(
       duration: const Duration(milliseconds: 250),
-      offset: g.barHidden ? Offset(-0.85, 0) : Offset.zero,
+      offset: uiController.barHidden ? Offset(-0.85, 0) : Offset.zero,
       child: Padding(
         padding: EdgeInsets.only(top: 20, left: 20),
-        child: Container(
-          padding: EdgeInsets.all(10),
-          margin: EdgeInsets.all(10),
-          height: constraints.maxHeight * 0.3,
-          decoration: BoxDecoration(
-            border: Border.all(color: colors.border),
-            borderRadius: BorderRadius.circular(10),
-          ),
+        child: NovaContainer(
+          padding: EdgeInsets.only(left: 5, top: 10, right: 10, bottom: 10),
+          margin: EdgeInsets.only(left: 5, top: 10, right: 10, bottom: 10),
+          height: widget.constraints.maxHeight * 0.3,
           child: Row(
             mainAxisSize: .min,
             children: [
               NavigationRail(
                 extended: true,
                 minExtendedWidth: 200,
-                selectedIndex: _currentNavIndex(navManager.pages),
+                selectedIndex: _currentNavIndex(widget.navController.pages),
                 onDestinationSelected: (index) {
-                  navManager.openPage(navManager.pages[index]);
+                  widget.navController.openPage(widget.navController.pages[index]);
                 },
                 backgroundColor: colors.sidebarBackground,
-                destinations: navManager.pages.map(_buildItem).toList(),
+                destinations: widget.navController.pages.map((page) => _buildItem(page, context)).toList(),
               ),
               Padding(
                 padding: EdgeInsets.only(left: 6),
@@ -152,8 +185,8 @@ class AppRailBar extends StatelessWidget {
                   child: RotatedBox(
                     quarterTurns: 1,
                     child: NavBarToggler(
-                      onPressed: () => g.barToggle(),
-                      isActive: !g.barHidden,
+                      onPressed: () => uiController.toggleBar(null),
+                      isActive: !uiController.barHidden,
                     ),
                   ),
                 ),
@@ -165,16 +198,16 @@ class AppRailBar extends StatelessWidget {
     );
   }
 
-  int _currentNavIndex(List<PageEntry> pages) {
-    final currentId = navManager.currentPage.id;
+  int _currentNavIndex(List<PageConfig> pages) {
+    final currentId = widget.navController.currentPage.id;
     final index = pages.indexWhere((t) => t.id == currentId);
     return index != -1 ? index : 0;
   }
 
-  NavigationRailDestination _buildItem(PageEntry entry) {
+  NavigationRailDestination _buildItem(PageConfig entry, BuildContext context) {
     return NavigationRailDestination(
-      icon: Icon(entry.id.icon),
-      label: Text(entry.id.label),
+      icon: Icon(entry.icon),
+      label: Text(entry.label(context)),
     );
   }
 }

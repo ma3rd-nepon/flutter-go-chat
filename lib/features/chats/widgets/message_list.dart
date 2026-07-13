@@ -3,6 +3,7 @@ import "package:flutter_go_chat/app/theme/theme_extension.dart";
 import 'package:flutter_go_chat/features/chats/widgets/chat_tabs.dart';
 import 'package:flutter_go_chat/features/chats/widgets/message_bubble.dart';
 import 'package:flutter_go_chat/core/services/database/db_service.dart';
+import 'package:flutter_go_chat/core/extensions/l10n_extension.dart';
 
 class MessageList extends StatelessWidget {
   const MessageList({super.key});
@@ -33,13 +34,13 @@ class MessageList extends StatelessWidget {
             return Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text("ERROR MessageList: ${snapshot.error}"));
+            return Center(child: Text(context.l10n.unexpectError(snapshot.error.toString())));
           }
 
           final messages = snapshot.data ?? [];
 
           if (messages.isEmpty) {
-            return Center(child: Text("Начните общение"));
+            return Center(child: Text(context.l10n.emptyChats));
           }
 
           return ListView.builder(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_go_chat/core/services/database/db_service.dart';
-import 'package:flutter_go_chat/core/services/global_screen_manager.dart';
+import 'package:flutter_go_chat/core/services/app_scope/scope.dart';
 import 'package:flutter_go_chat/features/chats/widgets/chat_tabs.dart';
 import 'package:flutter_go_chat/features/chats/widgets/chat_list_view.dart';
 import 'package:flutter_go_chat/features/chats/widgets/chat_body.dart';
@@ -31,6 +31,7 @@ class _ChatsPageState extends State<ChatsPage> {
     setState(() {
       _currentChatId = chatId;
     });
+    AppScope.read(context).uiController.toggleBar(true);
   }
 
   void _sendMessage(String text) async {
@@ -63,7 +64,7 @@ class _ChatsPageState extends State<ChatsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final g = GlobalScreenManager.of(context);
+    final g = AppScope.of(context);
 
     return Scaffold(
       body: SafeArea(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_go_chat/core/services/global_screen_manager.dart';
+import 'package:flutter_go_chat/core/services/app_scope/scope.dart';
 import 'package:flutter_go_chat/core/services/page_manager.dart';
 
 class _ParticleEffectHost extends StatefulWidget {
@@ -24,31 +24,25 @@ class _ParticleEffectHostState extends State<_ParticleEffectHost> {
 
   @override
   Widget build(BuildContext context) {
-    return GlobalScreenManager(
-      isLoggedIn: true,
-      loginSuccess: (_) {},
-      uiManager: PageManager(),
-      currentUserId: 1,
-      barToggle: () {},
-      barHidden: false,
-      wallpaperUrl: null,
-      changeWallpaper: (_) {},
-      changeParticleEffect: (_) {},
-      particleEffectId: particleEffectId,
+    return AppScope(
+      authController: AuthController(),
+      uiController: UIController(),
+      navController: NavigationController(),
+      settingsController: SettingsController(),
       child: _ParticleEffectConsumer(onEffectChanged: widget.onEffectChanged),
     );
   }
 }
 
 class _ParticleEffectConsumer extends StatelessWidget {
-  const _ParticleEffectConsumer({required this.onEffectChanged, super.key});
+  const _ParticleEffectConsumer({super.key, required this.onEffectChanged});
 
   final ValueChanged<String?> onEffectChanged;
 
   @override
   Widget build(BuildContext context) {
-    final manager = GlobalScreenManager.of(context);
-    onEffectChanged(manager.particleEffectId);
+    final manager = AppScope.of(context);
+    onEffectChanged(manager.settingsController.particleEffectId);
     return const SizedBox.shrink();
   }
 }

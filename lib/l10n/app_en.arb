@@ -1,0 +1,183 @@
+{
+    "@@locale": "en",
+
+    "unexpectError": "Unexpected error occured: {error}",
+    "@unexpectError": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        },
+        "description": "Error occured text"
+    },
+
+    "toMain": "To Main Screen",
+    "@toMain": {
+        "description": "To main screen text"
+    },
+
+    "signIn" : "Sign in",
+    "@signIn": {
+        "description": "Sign in text on Login Page"
+    },
+
+    "errorId": "Enter valid ID",
+    "@errorId": {
+        "description": "Error ID text on Login page"
+    },
+
+    "enterLogin": "Enter your ID",
+    "@enterLogin": {
+        "description": "Enter login on Login page"
+    },
+
+    "signInDesktop": "Sign in (Desktop)",
+    "@signInDesktop": {
+        "description": "Sign in text on Login page button from desktop"
+    },
+    
+    "signInMobile": "Sign in (Mobile)",
+    "@signInMobile": {
+        "description": "Sign in text on Login page button from mobile"
+    },
+
+    "welcome": "Welcome to the {name}",
+    "@welcome": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        },
+        "description": "Greetings text on Welcome page"
+    },
+
+    "start": "Start Messaging",
+    "@start": {
+        "description": "Start button text"
+    },
+
+    "callsCap": "Hello from CALLS Page to {platform} user!",
+    "@callsCap": {
+        "placeholders": {
+            "platform": {
+                "type": "String"
+            }
+        },
+        "description": "Cap for Calls Page"
+    },
+
+    "enterMessage": "Enter a message",
+    "@enterMessage": {
+        "description": "Enter a message text field in chats"
+    },
+
+    "emptyChats": "While it's empty, start chatting!",
+    "@emptyChats": {
+        "description": "Message for empty chat list or chat"
+    },
+
+    "messageDeleted": "The message was deleted.",
+    "@messageDeleted": {
+        "description": "Text for deleted message"
+    },
+
+    "nameError": "NAME ERROR",
+    "@nameError": {
+        "description": "Name error in chats"
+    },
+
+    "wasRecently": "last seen recently",
+    "@wasRecently": {
+        "description": "User status in chats/profile"
+    },
+
+    "you": "You: ",
+    "@you": {
+        "description": "yoo wassup"
+    },
+
+    "profileCap": "Hello from PROFILE page to {platform} user!",
+    "@profileCap": {
+        "placeholders": {
+            "platform": {
+                "type": "String"
+            }
+        },
+        "description": "Profile page cap"
+    },
+
+    "sectionVisual": "Visual",
+    "@sectionVisual": {
+        "description": "Name of Visual section in Settings"
+    },
+
+    "dropdownTheme": "choose a Theme",
+    "@dropdownTheme": {
+        "description": "dropdownMenu text for Theme"
+    },
+
+    "dropdownAccent": "choose an Accent",
+    "@dropdownAccent": {
+        "description": "dropdownMenu text for Accent"
+    },
+
+    "dropdownParticle": "choose a Particle Preset",
+    "@dropdownParticle": {
+        "description": "dropdownMenu text for Particles"
+    },
+
+    "labelProfile": "Profile",
+    "@labelProfile": {
+        "description": "Name of the profile button in navigation bar"
+    },
+
+    "labelChats": "Messages",
+    "@labelChats": {
+        "description": "Name of the chats button in navigation bar"
+    },
+
+    "labelCalls": "Calls",
+    "@labelCalls": {
+        "description": "Name of the calls button in navigation bar"
+    },
+
+    "labelSettings": "Settings",
+    "@labelSettings": {
+        "description": "Name of the settings button in navigation bar"
+    },
+
+    "labelMusic": "Music",
+    "@labelMusic": {
+        "description": "Name of the music button in navigation bar"
+    },
+
+    "labelUnknown": "Unknown",
+    "@labelUnknown": {
+        "description": "Name of the unknown button in navigation bar"
+    },
+
+    "searchBar": "Search smth...",
+    "@searchBar": {
+        "description": "Search field in App bar"
+    },
+
+    "chooseLang": "Choose Language",
+    "@chooseLang": {
+        "description": "Choose language text"
+    },
+
+    "useGlass": "Use Glass UI",
+    "@useGlass": {
+        "description": "Use Glass text"
+    },
+
+    "saveSettings": "Save Settings",
+    "@saveSettings": {
+        "description": "save settings text"
+    },
+
+    "logout": "Log out",
+    "@logout": {
+        "description": "Logout button in settings"
+    }
+}
