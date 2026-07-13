@@ -44,7 +44,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (user == null) {
       return Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    // final g = AppScope.of(context);
+    // final g = AppScope.of(context); 123
     final colors = Theme.of(context).extension<AppThemeExtension>()!.colors;
 
     return Scaffold(
