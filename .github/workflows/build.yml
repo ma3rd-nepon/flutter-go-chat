@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - client
 
 jobs:
   build-filter:
