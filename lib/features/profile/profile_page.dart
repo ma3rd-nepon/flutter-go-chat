@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_go_chat/core/services/app_scope/scope.dart';
-import 'package:flutter_go_chat/core/extensions/l10n_extension.dart';
 import 'package:flutter_go_chat/core/services/database/db_service.dart';
 import 'package:flutter_go_chat/core/widgets/nova_design/nova_design.dart';
 import 'package:flutter_go_chat/app/theme/theme_extension.dart';
@@ -42,9 +41,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (user == null)
+    if (user == null) {
       return Scaffold(body: Center(child: CircularProgressIndicator()));
-    final g = AppScope.of(context);
+    }
+    // final g = AppScope.of(context);
     final colors = Theme.of(context).extension<AppThemeExtension>()!.colors;
 
     return Scaffold(
