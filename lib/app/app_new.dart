@@ -62,7 +62,6 @@ class _AppShellState extends State<AppShell> with WindowListener {
     }
 
     setCon.load();
-    authCon.restoreSession();
   }
 
   // void loginSuccess(int newUserId) {
@@ -119,7 +118,7 @@ class _AppShellState extends State<AppShell> with WindowListener {
           supportedLocales: AppLocale.supportedLocales,
           localizationsDelegates: AppLocale.delegates,
           theme: controller.theme,
-          home: StartupScreen(isLoggedIn: authCon.currentState == .authorized),
+          home: StartupScreen(authController: authCon),
           routes: {
             '/welcome': (context) => WelcomeScreen(),
             '/login': (context) => LoginScreen(),

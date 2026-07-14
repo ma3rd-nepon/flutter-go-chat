@@ -10,7 +10,7 @@ part 'db_service.g.dart';
 
 @DataClassName('User')
 class Users extends Table {
-  IntColumn get id => integer().autoIncrement()();
+  TextColumn get id => text()();
   TextColumn get username => text().unique()();
   TextColumn get phone => text().unique().nullable()();
   TextColumn get displayName => text()();
@@ -40,7 +40,7 @@ class Chats extends Table {
 @DataClassName('ChatMember')
 class ChatMembers extends Table {
   IntColumn get chatId => integer()();
-  IntColumn get userId => integer()();
+  TextColumn get userId => text()();
 
   TextColumn get role => text().customConstraint(
     "NOT NULL CHECK(role IN ('owner','admin','member'))",
@@ -59,7 +59,7 @@ class ChatMembers extends Table {
 class Messages extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get chatId => integer()();
-  IntColumn get senderId => integer()();
+  TextColumn get senderId => text()();
   IntColumn get replyTo => integer().nullable()();
 
   TextColumn get type => text().customConstraint(
@@ -87,7 +87,7 @@ class Attachments extends Table {
 @DataClassName('MessageState')
 class MessageStates extends Table {
   IntColumn get messageId => integer()();
-  IntColumn get userId => integer()();
+  TextColumn get userId => text()();
 
   TextColumn get status => text().customConstraint(
     "NOT NULL CHECK(status IN ('sent', 'read', 'delivered'))",
@@ -155,7 +155,7 @@ class DatabaseService {
     return _db.getChat(chatId);
   }
 
-  Future<User?> getUser(int userId) {
+  Future<User?> getUser(String userId) {
     return _db.getUser(userId);
   }
 }
@@ -191,19 +191,19 @@ class MyDatabase extends _$MyDatabase {
         ).insert(ChatsCompanion.insert(type: "group", name: Value("chat 4")));
 
         await into(users).insert(
-          UsersCompanion.insert(username: "danil", displayName: "Danil"),
+          UsersCompanion.insert(id: "1", username: "danil", displayName: "Danil"),
         );
 
         await into(
           users,
-        ).insert(UsersCompanion.insert(username: "emir", displayName: "Emir"));
+        ).insert(UsersCompanion.insert(id: "2", username: "emir", displayName: "Emir"));
 
         await into(users).insert(
-          UsersCompanion.insert(username: "zxcursed", displayName: "ZXCursed"),
+          UsersCompanion.insert(id: "3", username: "zxcursed", displayName: "ZXCursed"),
         );
 
         await into(users).insert(
-          UsersCompanion.insert(username: "rimanetcz", displayName: "Rimanec"),
+          UsersCompanion.insert(id: "4", username: "rimanetcz", displayName: "Rimanec"),
         );
       },
       onUpgrade: (m, from, to) async {
@@ -297,7 +297,7 @@ class MyDatabase extends _$MyDatabase {
     )..where((chat) => chat.id.equals(chatId))).getSingleOrNull();
   }
 
-  Future<User?> getUser(int userId) {
+  Future<User?> getUser(String userId) {
     return (select(users)..where((user) => user.id.equals(userId))).getSingleOrNull();
   }
 

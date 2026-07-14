@@ -10,16 +10,12 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   $UsersTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
     'id',
     aliasedName,
     false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _usernameMeta = const VerificationMeta(
     'username',
@@ -150,6 +146,8 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
     }
     if (data.containsKey('username')) {
       context.handle(
@@ -216,13 +214,13 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => const {};
   @override
   User map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return User(
       id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
+        DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
       username: attachedDatabase.typeMapping.read(
@@ -271,7 +269,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
 }
 
 class User extends DataClass implements Insertable<User> {
-  final int id;
+  final String id;
   final String username;
   final String? phone;
   final String displayName;
@@ -296,7 +294,7 @@ class User extends DataClass implements Insertable<User> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
+    map['id'] = Variable<String>(id);
     map['username'] = Variable<String>(username);
     if (!nullToAbsent || phone != null) {
       map['phone'] = Variable<String>(phone);
@@ -348,7 +346,7 @@ class User extends DataClass implements Insertable<User> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return User(
-      id: serializer.fromJson<int>(json['id']),
+      id: serializer.fromJson<String>(json['id']),
       username: serializer.fromJson<String>(json['username']),
       phone: serializer.fromJson<String?>(json['phone']),
       displayName: serializer.fromJson<String>(json['displayName']),
@@ -364,7 +362,7 @@ class User extends DataClass implements Insertable<User> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
+      'id': serializer.toJson<String>(id),
       'username': serializer.toJson<String>(username),
       'phone': serializer.toJson<String?>(phone),
       'displayName': serializer.toJson<String>(displayName),
@@ -378,7 +376,7 @@ class User extends DataClass implements Insertable<User> {
   }
 
   User copyWith({
-    int? id,
+    String? id,
     String? username,
     Value<String?> phone = const Value.absent(),
     String? displayName,
@@ -464,7 +462,7 @@ class User extends DataClass implements Insertable<User> {
 }
 
 class UsersCompanion extends UpdateCompanion<User> {
-  final Value<int> id;
+  final Value<String> id;
   final Value<String> username;
   final Value<String?> phone;
   final Value<String> displayName;
@@ -474,6 +472,7 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<DateTime> createdAt;
   final Value<DateTime?> lastSeen;
   final Value<bool> isOnline;
+  final Value<int> rowid;
   const UsersCompanion({
     this.id = const Value.absent(),
     this.username = const Value.absent(),
@@ -485,9 +484,10 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.createdAt = const Value.absent(),
     this.lastSeen = const Value.absent(),
     this.isOnline = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   UsersCompanion.insert({
-    this.id = const Value.absent(),
+    required String id,
     required String username,
     this.phone = const Value.absent(),
     required String displayName,
@@ -497,10 +497,12 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.createdAt = const Value.absent(),
     this.lastSeen = const Value.absent(),
     this.isOnline = const Value.absent(),
-  }) : username = Value(username),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       username = Value(username),
        displayName = Value(displayName);
   static Insertable<User> custom({
-    Expression<int>? id,
+    Expression<String>? id,
     Expression<String>? username,
     Expression<String>? phone,
     Expression<String>? displayName,
@@ -510,6 +512,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<DateTime>? createdAt,
     Expression<DateTime>? lastSeen,
     Expression<bool>? isOnline,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -522,11 +525,12 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (createdAt != null) 'created_at': createdAt,
       if (lastSeen != null) 'last_seen': lastSeen,
       if (isOnline != null) 'is_online': isOnline,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
   UsersCompanion copyWith({
-    Value<int>? id,
+    Value<String>? id,
     Value<String>? username,
     Value<String?>? phone,
     Value<String>? displayName,
@@ -536,6 +540,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Value<DateTime>? createdAt,
     Value<DateTime?>? lastSeen,
     Value<bool>? isOnline,
+    Value<int>? rowid,
   }) {
     return UsersCompanion(
       id: id ?? this.id,
@@ -548,6 +553,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       createdAt: createdAt ?? this.createdAt,
       lastSeen: lastSeen ?? this.lastSeen,
       isOnline: isOnline ?? this.isOnline,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -555,7 +561,7 @@ class UsersCompanion extends UpdateCompanion<User> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<int>(id.value);
+      map['id'] = Variable<String>(id.value);
     }
     if (username.present) {
       map['username'] = Variable<String>(username.value);
@@ -584,6 +590,9 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (isOnline.present) {
       map['is_online'] = Variable<bool>(isOnline.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -599,7 +608,8 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('bio: $bio, ')
           ..write('createdAt: $createdAt, ')
           ..write('lastSeen: $lastSeen, ')
-          ..write('isOnline: $isOnline')
+          ..write('isOnline: $isOnline, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -1029,11 +1039,11 @@ class $ChatMembersTable extends ChatMembers
   );
   static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
   @override
-  late final GeneratedColumn<int> userId = GeneratedColumn<int>(
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
     'user_id',
     aliasedName,
     false,
-    type: DriftSqlType.int,
+    type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _roleMeta = const VerificationMeta('role');
@@ -1183,7 +1193,7 @@ class $ChatMembersTable extends ChatMembers
         data['${effectivePrefix}chat_id'],
       )!,
       userId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
+        DriftSqlType.string,
         data['${effectivePrefix}user_id'],
       )!,
       role: attachedDatabase.typeMapping.read(
@@ -1217,7 +1227,7 @@ class $ChatMembersTable extends ChatMembers
 
 class ChatMember extends DataClass implements Insertable<ChatMember> {
   final int chatId;
-  final int userId;
+  final String userId;
   final String role;
   final DateTime joinedAt;
   final int? lastReadMessage;
@@ -1236,7 +1246,7 @@ class ChatMember extends DataClass implements Insertable<ChatMember> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['chat_id'] = Variable<int>(chatId);
-    map['user_id'] = Variable<int>(userId);
+    map['user_id'] = Variable<String>(userId);
     map['role'] = Variable<String>(role);
     map['joined_at'] = Variable<DateTime>(joinedAt);
     if (!nullToAbsent || lastReadMessage != null) {
@@ -1272,7 +1282,7 @@ class ChatMember extends DataClass implements Insertable<ChatMember> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ChatMember(
       chatId: serializer.fromJson<int>(json['chatId']),
-      userId: serializer.fromJson<int>(json['userId']),
+      userId: serializer.fromJson<String>(json['userId']),
       role: serializer.fromJson<String>(json['role']),
       joinedAt: serializer.fromJson<DateTime>(json['joinedAt']),
       lastReadMessage: serializer.fromJson<int?>(json['lastReadMessage']),
@@ -1285,7 +1295,7 @@ class ChatMember extends DataClass implements Insertable<ChatMember> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'chatId': serializer.toJson<int>(chatId),
-      'userId': serializer.toJson<int>(userId),
+      'userId': serializer.toJson<String>(userId),
       'role': serializer.toJson<String>(role),
       'joinedAt': serializer.toJson<DateTime>(joinedAt),
       'lastReadMessage': serializer.toJson<int?>(lastReadMessage),
@@ -1296,7 +1306,7 @@ class ChatMember extends DataClass implements Insertable<ChatMember> {
 
   ChatMember copyWith({
     int? chatId,
-    int? userId,
+    String? userId,
     String? role,
     DateTime? joinedAt,
     Value<int?> lastReadMessage = const Value.absent(),
@@ -1368,7 +1378,7 @@ class ChatMember extends DataClass implements Insertable<ChatMember> {
 
 class ChatMembersCompanion extends UpdateCompanion<ChatMember> {
   final Value<int> chatId;
-  final Value<int> userId;
+  final Value<String> userId;
   final Value<String> role;
   final Value<DateTime> joinedAt;
   final Value<int?> lastReadMessage;
@@ -1387,7 +1397,7 @@ class ChatMembersCompanion extends UpdateCompanion<ChatMember> {
   });
   ChatMembersCompanion.insert({
     required int chatId,
-    required int userId,
+    required String userId,
     required String role,
     this.joinedAt = const Value.absent(),
     this.lastReadMessage = const Value.absent(),
@@ -1399,7 +1409,7 @@ class ChatMembersCompanion extends UpdateCompanion<ChatMember> {
        role = Value(role);
   static Insertable<ChatMember> custom({
     Expression<int>? chatId,
-    Expression<int>? userId,
+    Expression<String>? userId,
     Expression<String>? role,
     Expression<DateTime>? joinedAt,
     Expression<int>? lastReadMessage,
@@ -1421,7 +1431,7 @@ class ChatMembersCompanion extends UpdateCompanion<ChatMember> {
 
   ChatMembersCompanion copyWith({
     Value<int>? chatId,
-    Value<int>? userId,
+    Value<String>? userId,
     Value<String>? role,
     Value<DateTime>? joinedAt,
     Value<int?>? lastReadMessage,
@@ -1448,7 +1458,7 @@ class ChatMembersCompanion extends UpdateCompanion<ChatMember> {
       map['chat_id'] = Variable<int>(chatId.value);
     }
     if (userId.present) {
-      map['user_id'] = Variable<int>(userId.value);
+      map['user_id'] = Variable<String>(userId.value);
     }
     if (role.present) {
       map['role'] = Variable<String>(role.value);
@@ -1518,11 +1528,11 @@ class $MessagesTable extends Messages with TableInfo<$MessagesTable, Message> {
     'senderId',
   );
   @override
-  late final GeneratedColumn<int> senderId = GeneratedColumn<int>(
+  late final GeneratedColumn<String> senderId = GeneratedColumn<String>(
     'sender_id',
     aliasedName,
     false,
-    type: DriftSqlType.int,
+    type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _replyToMeta = const VerificationMeta(
@@ -1714,7 +1724,7 @@ class $MessagesTable extends Messages with TableInfo<$MessagesTable, Message> {
         data['${effectivePrefix}chat_id'],
       )!,
       senderId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
+        DriftSqlType.string,
         data['${effectivePrefix}sender_id'],
       )!,
       replyTo: attachedDatabase.typeMapping.read(
@@ -1757,7 +1767,7 @@ class $MessagesTable extends Messages with TableInfo<$MessagesTable, Message> {
 class Message extends DataClass implements Insertable<Message> {
   final int id;
   final int chatId;
-  final int senderId;
+  final String senderId;
   final int? replyTo;
   final String type;
   final String? content;
@@ -1782,7 +1792,7 @@ class Message extends DataClass implements Insertable<Message> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['chat_id'] = Variable<int>(chatId);
-    map['sender_id'] = Variable<int>(senderId);
+    map['sender_id'] = Variable<String>(senderId);
     if (!nullToAbsent || replyTo != null) {
       map['reply_to'] = Variable<int>(replyTo);
     }
@@ -1828,7 +1838,7 @@ class Message extends DataClass implements Insertable<Message> {
     return Message(
       id: serializer.fromJson<int>(json['id']),
       chatId: serializer.fromJson<int>(json['chatId']),
-      senderId: serializer.fromJson<int>(json['senderId']),
+      senderId: serializer.fromJson<String>(json['senderId']),
       replyTo: serializer.fromJson<int?>(json['replyTo']),
       type: serializer.fromJson<String>(json['type']),
       content: serializer.fromJson<String?>(json['content']),
@@ -1844,7 +1854,7 @@ class Message extends DataClass implements Insertable<Message> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'chatId': serializer.toJson<int>(chatId),
-      'senderId': serializer.toJson<int>(senderId),
+      'senderId': serializer.toJson<String>(senderId),
       'replyTo': serializer.toJson<int?>(replyTo),
       'type': serializer.toJson<String>(type),
       'content': serializer.toJson<String?>(content),
@@ -1858,7 +1868,7 @@ class Message extends DataClass implements Insertable<Message> {
   Message copyWith({
     int? id,
     int? chatId,
-    int? senderId,
+    String? senderId,
     Value<int?> replyTo = const Value.absent(),
     String? type,
     Value<String?> content = const Value.absent(),
@@ -1942,7 +1952,7 @@ class Message extends DataClass implements Insertable<Message> {
 class MessagesCompanion extends UpdateCompanion<Message> {
   final Value<int> id;
   final Value<int> chatId;
-  final Value<int> senderId;
+  final Value<String> senderId;
   final Value<int?> replyTo;
   final Value<String> type;
   final Value<String?> content;
@@ -1965,7 +1975,7 @@ class MessagesCompanion extends UpdateCompanion<Message> {
   MessagesCompanion.insert({
     this.id = const Value.absent(),
     required int chatId,
-    required int senderId,
+    required String senderId,
     this.replyTo = const Value.absent(),
     required String type,
     this.content = const Value.absent(),
@@ -1979,7 +1989,7 @@ class MessagesCompanion extends UpdateCompanion<Message> {
   static Insertable<Message> custom({
     Expression<int>? id,
     Expression<int>? chatId,
-    Expression<int>? senderId,
+    Expression<String>? senderId,
     Expression<int>? replyTo,
     Expression<String>? type,
     Expression<String>? content,
@@ -2005,7 +2015,7 @@ class MessagesCompanion extends UpdateCompanion<Message> {
   MessagesCompanion copyWith({
     Value<int>? id,
     Value<int>? chatId,
-    Value<int>? senderId,
+    Value<String>? senderId,
     Value<int?>? replyTo,
     Value<String>? type,
     Value<String?>? content,
@@ -2038,7 +2048,7 @@ class MessagesCompanion extends UpdateCompanion<Message> {
       map['chat_id'] = Variable<int>(chatId.value);
     }
     if (senderId.present) {
-      map['sender_id'] = Variable<int>(senderId.value);
+      map['sender_id'] = Variable<String>(senderId.value);
     }
     if (replyTo.present) {
       map['reply_to'] = Variable<int>(replyTo.value);
@@ -2559,11 +2569,11 @@ class $MessageStatesTable extends MessageStates
   );
   static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
   @override
-  late final GeneratedColumn<int> userId = GeneratedColumn<int>(
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
     'user_id',
     aliasedName,
     false,
-    type: DriftSqlType.int,
+    type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _statusMeta = const VerificationMeta('status');
@@ -2648,7 +2658,7 @@ class $MessageStatesTable extends MessageStates
         data['${effectivePrefix}message_id'],
       )!,
       userId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
+        DriftSqlType.string,
         data['${effectivePrefix}user_id'],
       )!,
       status: attachedDatabase.typeMapping.read(
@@ -2670,7 +2680,7 @@ class $MessageStatesTable extends MessageStates
 
 class MessageState extends DataClass implements Insertable<MessageState> {
   final int messageId;
-  final int userId;
+  final String userId;
   final String status;
   final String updatedAt;
   const MessageState({
@@ -2683,7 +2693,7 @@ class MessageState extends DataClass implements Insertable<MessageState> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['message_id'] = Variable<int>(messageId);
-    map['user_id'] = Variable<int>(userId);
+    map['user_id'] = Variable<String>(userId);
     map['status'] = Variable<String>(status);
     map['updated_at'] = Variable<String>(updatedAt);
     return map;
@@ -2705,7 +2715,7 @@ class MessageState extends DataClass implements Insertable<MessageState> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return MessageState(
       messageId: serializer.fromJson<int>(json['messageId']),
-      userId: serializer.fromJson<int>(json['userId']),
+      userId: serializer.fromJson<String>(json['userId']),
       status: serializer.fromJson<String>(json['status']),
       updatedAt: serializer.fromJson<String>(json['updatedAt']),
     );
@@ -2715,7 +2725,7 @@ class MessageState extends DataClass implements Insertable<MessageState> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'messageId': serializer.toJson<int>(messageId),
-      'userId': serializer.toJson<int>(userId),
+      'userId': serializer.toJson<String>(userId),
       'status': serializer.toJson<String>(status),
       'updatedAt': serializer.toJson<String>(updatedAt),
     };
@@ -2723,7 +2733,7 @@ class MessageState extends DataClass implements Insertable<MessageState> {
 
   MessageState copyWith({
     int? messageId,
-    int? userId,
+    String? userId,
     String? status,
     String? updatedAt,
   }) => MessageState(
@@ -2766,7 +2776,7 @@ class MessageState extends DataClass implements Insertable<MessageState> {
 
 class MessageStatesCompanion extends UpdateCompanion<MessageState> {
   final Value<int> messageId;
-  final Value<int> userId;
+  final Value<String> userId;
   final Value<String> status;
   final Value<String> updatedAt;
   final Value<int> rowid;
@@ -2779,7 +2789,7 @@ class MessageStatesCompanion extends UpdateCompanion<MessageState> {
   });
   MessageStatesCompanion.insert({
     required int messageId,
-    required int userId,
+    required String userId,
     required String status,
     required String updatedAt,
     this.rowid = const Value.absent(),
@@ -2789,7 +2799,7 @@ class MessageStatesCompanion extends UpdateCompanion<MessageState> {
        updatedAt = Value(updatedAt);
   static Insertable<MessageState> custom({
     Expression<int>? messageId,
-    Expression<int>? userId,
+    Expression<String>? userId,
     Expression<String>? status,
     Expression<String>? updatedAt,
     Expression<int>? rowid,
@@ -2805,7 +2815,7 @@ class MessageStatesCompanion extends UpdateCompanion<MessageState> {
 
   MessageStatesCompanion copyWith({
     Value<int>? messageId,
-    Value<int>? userId,
+    Value<String>? userId,
     Value<String>? status,
     Value<String>? updatedAt,
     Value<int>? rowid,
@@ -2826,7 +2836,7 @@ class MessageStatesCompanion extends UpdateCompanion<MessageState> {
       map['message_id'] = Variable<int>(messageId.value);
     }
     if (userId.present) {
-      map['user_id'] = Variable<int>(userId.value);
+      map['user_id'] = Variable<String>(userId.value);
     }
     if (status.present) {
       map['status'] = Variable<String>(status.value);
@@ -2878,7 +2888,7 @@ abstract class _$MyDatabase extends GeneratedDatabase {
 
 typedef $$UsersTableCreateCompanionBuilder =
     UsersCompanion Function({
-      Value<int> id,
+      required String id,
       required String username,
       Value<String?> phone,
       required String displayName,
@@ -2888,10 +2898,11 @@ typedef $$UsersTableCreateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime?> lastSeen,
       Value<bool> isOnline,
+      Value<int> rowid,
     });
 typedef $$UsersTableUpdateCompanionBuilder =
     UsersCompanion Function({
-      Value<int> id,
+      Value<String> id,
       Value<String> username,
       Value<String?> phone,
       Value<String> displayName,
@@ -2901,6 +2912,7 @@ typedef $$UsersTableUpdateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime?> lastSeen,
       Value<bool> isOnline,
+      Value<int> rowid,
     });
 
 class $$UsersTableFilterComposer extends Composer<_$MyDatabase, $UsersTable> {
@@ -2911,7 +2923,7 @@ class $$UsersTableFilterComposer extends Composer<_$MyDatabase, $UsersTable> {
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<int> get id => $composableBuilder(
+  ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnFilters(column),
   );
@@ -2970,7 +2982,7 @@ class $$UsersTableOrderingComposer extends Composer<_$MyDatabase, $UsersTable> {
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<int> get id => $composableBuilder(
+  ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
   );
@@ -3030,7 +3042,7 @@ class $$UsersTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<int> get id =>
+  GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
   GeneratedColumn<String> get username =>
@@ -3091,7 +3103,7 @@ class $$UsersTableTableManager
               $$UsersTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<int> id = const Value.absent(),
+                Value<String> id = const Value.absent(),
                 Value<String> username = const Value.absent(),
                 Value<String?> phone = const Value.absent(),
                 Value<String> displayName = const Value.absent(),
@@ -3101,6 +3113,7 @@ class $$UsersTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> lastSeen = const Value.absent(),
                 Value<bool> isOnline = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
               }) => UsersCompanion(
                 id: id,
                 username: username,
@@ -3112,10 +3125,11 @@ class $$UsersTableTableManager
                 createdAt: createdAt,
                 lastSeen: lastSeen,
                 isOnline: isOnline,
+                rowid: rowid,
               ),
           createCompanionCallback:
               ({
-                Value<int> id = const Value.absent(),
+                required String id,
                 required String username,
                 Value<String?> phone = const Value.absent(),
                 required String displayName,
@@ -3125,6 +3139,7 @@ class $$UsersTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> lastSeen = const Value.absent(),
                 Value<bool> isOnline = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
               }) => UsersCompanion.insert(
                 id: id,
                 username: username,
@@ -3136,6 +3151,7 @@ class $$UsersTableTableManager
                 createdAt: createdAt,
                 lastSeen: lastSeen,
                 isOnline: isOnline,
+                rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -3369,7 +3385,7 @@ typedef $$ChatsTableProcessedTableManager =
 typedef $$ChatMembersTableCreateCompanionBuilder =
     ChatMembersCompanion Function({
       required int chatId,
-      required int userId,
+      required String userId,
       required String role,
       Value<DateTime> joinedAt,
       Value<int?> lastReadMessage,
@@ -3380,7 +3396,7 @@ typedef $$ChatMembersTableCreateCompanionBuilder =
 typedef $$ChatMembersTableUpdateCompanionBuilder =
     ChatMembersCompanion Function({
       Value<int> chatId,
-      Value<int> userId,
+      Value<String> userId,
       Value<String> role,
       Value<DateTime> joinedAt,
       Value<int?> lastReadMessage,
@@ -3403,7 +3419,7 @@ class $$ChatMembersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get userId => $composableBuilder(
+  ColumnFilters<String> get userId => $composableBuilder(
     column: $table.userId,
     builder: (column) => ColumnFilters(column),
   );
@@ -3448,7 +3464,7 @@ class $$ChatMembersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get userId => $composableBuilder(
+  ColumnOrderings<String> get userId => $composableBuilder(
     column: $table.userId,
     builder: (column) => ColumnOrderings(column),
   );
@@ -3491,7 +3507,7 @@ class $$ChatMembersTableAnnotationComposer
   GeneratedColumn<int> get chatId =>
       $composableBuilder(column: $table.chatId, builder: (column) => column);
 
-  GeneratedColumn<int> get userId =>
+  GeneratedColumn<String> get userId =>
       $composableBuilder(column: $table.userId, builder: (column) => column);
 
   GeneratedColumn<String> get role =>
@@ -3546,7 +3562,7 @@ class $$ChatMembersTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> chatId = const Value.absent(),
-                Value<int> userId = const Value.absent(),
+                Value<String> userId = const Value.absent(),
                 Value<String> role = const Value.absent(),
                 Value<DateTime> joinedAt = const Value.absent(),
                 Value<int?> lastReadMessage = const Value.absent(),
@@ -3566,7 +3582,7 @@ class $$ChatMembersTableTableManager
           createCompanionCallback:
               ({
                 required int chatId,
-                required int userId,
+                required String userId,
                 required String role,
                 Value<DateTime> joinedAt = const Value.absent(),
                 Value<int?> lastReadMessage = const Value.absent(),
@@ -3609,7 +3625,7 @@ typedef $$MessagesTableCreateCompanionBuilder =
     MessagesCompanion Function({
       Value<int> id,
       required int chatId,
-      required int senderId,
+      required String senderId,
       Value<int?> replyTo,
       required String type,
       Value<String?> content,
@@ -3622,7 +3638,7 @@ typedef $$MessagesTableUpdateCompanionBuilder =
     MessagesCompanion Function({
       Value<int> id,
       Value<int> chatId,
-      Value<int> senderId,
+      Value<String> senderId,
       Value<int?> replyTo,
       Value<String> type,
       Value<String?> content,
@@ -3651,7 +3667,7 @@ class $$MessagesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get senderId => $composableBuilder(
+  ColumnFilters<String> get senderId => $composableBuilder(
     column: $table.senderId,
     builder: (column) => ColumnFilters(column),
   );
@@ -3711,7 +3727,7 @@ class $$MessagesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get senderId => $composableBuilder(
+  ColumnOrderings<String> get senderId => $composableBuilder(
     column: $table.senderId,
     builder: (column) => ColumnOrderings(column),
   );
@@ -3767,7 +3783,7 @@ class $$MessagesTableAnnotationComposer
   GeneratedColumn<int> get chatId =>
       $composableBuilder(column: $table.chatId, builder: (column) => column);
 
-  GeneratedColumn<int> get senderId =>
+  GeneratedColumn<String> get senderId =>
       $composableBuilder(column: $table.senderId, builder: (column) => column);
 
   GeneratedColumn<int> get replyTo =>
@@ -3822,7 +3838,7 @@ class $$MessagesTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<int> chatId = const Value.absent(),
-                Value<int> senderId = const Value.absent(),
+                Value<String> senderId = const Value.absent(),
                 Value<int?> replyTo = const Value.absent(),
                 Value<String> type = const Value.absent(),
                 Value<String?> content = const Value.absent(),
@@ -3846,7 +3862,7 @@ class $$MessagesTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 required int chatId,
-                required int senderId,
+                required String senderId,
                 Value<int?> replyTo = const Value.absent(),
                 required String type,
                 Value<String?> content = const Value.absent(),
@@ -4122,7 +4138,7 @@ typedef $$AttachmentsTableProcessedTableManager =
 typedef $$MessageStatesTableCreateCompanionBuilder =
     MessageStatesCompanion Function({
       required int messageId,
-      required int userId,
+      required String userId,
       required String status,
       required String updatedAt,
       Value<int> rowid,
@@ -4130,7 +4146,7 @@ typedef $$MessageStatesTableCreateCompanionBuilder =
 typedef $$MessageStatesTableUpdateCompanionBuilder =
     MessageStatesCompanion Function({
       Value<int> messageId,
-      Value<int> userId,
+      Value<String> userId,
       Value<String> status,
       Value<String> updatedAt,
       Value<int> rowid,
@@ -4150,7 +4166,7 @@ class $$MessageStatesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get userId => $composableBuilder(
+  ColumnFilters<String> get userId => $composableBuilder(
     column: $table.userId,
     builder: (column) => ColumnFilters(column),
   );
@@ -4180,7 +4196,7 @@ class $$MessageStatesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get userId => $composableBuilder(
+  ColumnOrderings<String> get userId => $composableBuilder(
     column: $table.userId,
     builder: (column) => ColumnOrderings(column),
   );
@@ -4208,7 +4224,7 @@ class $$MessageStatesTableAnnotationComposer
   GeneratedColumn<int> get messageId =>
       $composableBuilder(column: $table.messageId, builder: (column) => column);
 
-  GeneratedColumn<int> get userId =>
+  GeneratedColumn<String> get userId =>
       $composableBuilder(column: $table.userId, builder: (column) => column);
 
   GeneratedColumn<String> get status =>
@@ -4250,7 +4266,7 @@ class $$MessageStatesTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> messageId = const Value.absent(),
-                Value<int> userId = const Value.absent(),
+                Value<String> userId = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<String> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -4264,7 +4280,7 @@ class $$MessageStatesTableTableManager
           createCompanionCallback:
               ({
                 required int messageId,
-                required int userId,
+                required String userId,
                 required String status,
                 required String updatedAt,
                 Value<int> rowid = const Value.absent(),

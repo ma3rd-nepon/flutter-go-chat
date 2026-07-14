@@ -7,7 +7,7 @@ import 'package:flutter_go_chat/features/chats/widgets/chat_body.dart';
 import 'package:drift/drift.dart';
 
 class ChatsPage extends StatefulWidget {
-  final int currentUserId;
+  final String currentUserId;
   const ChatsPage({
     super.key,
     required this.currentUserId,

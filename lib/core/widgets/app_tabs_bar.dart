@@ -88,7 +88,9 @@ class _AppBottomBarState extends State<AppBottomBar> {
                   selectedFontSize: 10,
                   type: BottomNavigationBarType.fixed,
                   backgroundColor: colors.sidebarBackground,
-                  items: widget.navController.pages.map((page) => _buildItem(page, context)).toList(),
+                  items: widget.navController.pages
+                      .map((page) => _buildItem(page, context))
+                      .toList(),
                 ),
               ),
             ],
@@ -137,7 +139,7 @@ class _AppRailBarState extends State<AppRailBar> {
   }
 
   void updateState() {
-    if (!mounted) return; 
+    if (!mounted) return;
     setState(() {});
   }
 
@@ -173,10 +175,14 @@ class _AppRailBarState extends State<AppRailBar> {
                 minExtendedWidth: 200,
                 selectedIndex: _currentNavIndex(widget.navController.pages),
                 onDestinationSelected: (index) {
-                  widget.navController.openPage(widget.navController.pages[index]);
+                  widget.navController.openPage(
+                    widget.navController.pages[index],
+                  );
                 },
                 backgroundColor: colors.sidebarBackground,
-                destinations: widget.navController.pages.map((page) => _buildItem(page, context)).toList(),
+                destinations: widget.navController.pages
+                    .map((page) => _buildItem(page, context))
+                    .toList(),
               ),
               Padding(
                 padding: EdgeInsets.only(left: 6),

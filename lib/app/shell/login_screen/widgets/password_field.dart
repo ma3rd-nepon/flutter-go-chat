@@ -18,6 +18,7 @@ class _PasswordFieldState extends State<PasswordField> {
 
     return g.isDesktop(context)
         ? TextField(
+            controller: widget.controller,
             obscureText: _obscured,
             decoration: InputDecoration(
               hintText: 'Enter password', // ubrat govno
@@ -33,6 +34,7 @@ class _PasswordFieldState extends State<PasswordField> {
               bottom: MediaQuery.viewInsetsOf(context).bottom,
             ),
             child: TextField(
+              controller: widget.controller,
               obscureText: _obscured,
               decoration: InputDecoration(
                 hintText: 'Enter password',

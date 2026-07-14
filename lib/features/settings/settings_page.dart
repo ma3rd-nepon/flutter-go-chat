@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_go_chat/app/theme/theme_controller.dart';
 import 'package:flutter_go_chat/app/theme/theme_extension.dart';
 import 'package:flutter_go_chat/app/theme/theme_list.dart';
 import 'package:flutter_go_chat/core/services/app_scope/scope.dart';
@@ -166,22 +165,31 @@ class SettingsScreen extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                Row(children: [ElevatedButton(
-                  onPressed: () async {
-                    await g.settingsController.save();
-                  },
-                  child: Text(context.l10n.saveSettings),
-                ),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        await g.settingsController.save();
+                      },
+                      child: Text(context.l10n.saveSettings),
+                    ),
 
-                const SizedBox(width: 20),
+                    const SizedBox(width: 20),
 
-                ElevatedButton(
-                  onPressed: () async {
-                    await g.authController.logout();
-                  },
-                  child: Text(context.l10n.logout),
+                    ElevatedButton(
+                      onPressed: () async {
+                        await g.authController.logout();
+
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          '/welcome',
+                          (route) => false,
+                        );
+                      },
+                      child: Text(context.l10n.logout),
+                    ),
+                  ],
                 ),
-                ]),
 
                 const SizedBox(height: 20),
 

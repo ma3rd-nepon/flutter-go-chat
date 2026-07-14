@@ -26,7 +26,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> loadUser() async {
     user = await _db.getUser(
-      AppScope.read(context).authController.currentUserId ?? 1,
+      AppScope.read(context).authController.currentUserId ?? "1",
     );
 
     if (mounted) {

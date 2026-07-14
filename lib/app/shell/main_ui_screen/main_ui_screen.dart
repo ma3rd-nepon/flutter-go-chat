@@ -17,7 +17,7 @@ import 'package:flutter_go_chat/core/services/app_scope/scope.dart';
 import 'package:flutter_go_chat/core/widgets/nova_design/nova_design.dart';
 
 class MainUIScreen extends StatefulWidget {
-  final int currentUserId;
+  final String currentUserId;
 
   const MainUIScreen({super.key, required this.currentUserId});
 
