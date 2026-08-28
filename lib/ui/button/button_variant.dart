@@ -1,0 +1,1 @@
+enum ButtonVariant { primary, secondary, danger, ghost }

@@ -4,6 +4,7 @@
   "surface": "0xDDF1F4F7",
   "surface_variant": "0xDDE4E8ED",
   "surface_elevated": "0xDDF8FAFC",
+  "surface_shadow": "0xFF000000",
   "surface_hover": "0x22151A22",
   "surface_pressed": "0x33151A22",
   "surface_selected": "0x22FF9F43",
